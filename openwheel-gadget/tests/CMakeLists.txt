@@ -21,3 +21,7 @@ add_test(NAME MediaFunctionTest COMMAND test_mediafunction)
 qt_add_executable(test_scrollfunction test_scrollfunction.cpp)
 target_link_libraries(test_scrollfunction PRIVATE openwheel-gadget-core Qt6::Test)
 add_test(NAME ScrollFunctionTest COMMAND test_scrollfunction)
+
+qt_add_executable(test_dbuslistener test_dbuslistener.cpp)
+target_link_libraries(test_dbuslistener PRIVATE openwheel-gadget-core Qt6::Test Qt6::DBus)
+add_test(NAME DBusListenerTest COMMAND test_dbuslistener)

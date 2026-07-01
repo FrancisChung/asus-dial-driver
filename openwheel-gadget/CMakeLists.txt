@@ -17,6 +17,8 @@ qt_add_library(openwheel-gadget-core STATIC
     src/FunctionRegistry.cpp
     src/ProcessRunner.h
     src/ProcessRunner.cpp
+    src/DBusListener.h
+    src/DBusListener.cpp
     src/DBusCaller.h
     src/QtDBusCaller.h
     src/QtDBusCaller.cpp
