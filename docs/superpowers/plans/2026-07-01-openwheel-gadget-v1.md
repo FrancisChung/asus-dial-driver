@@ -2332,6 +2332,7 @@ git commit -m "gadget: add TrayIcon"
 **Interfaces:**
 - Consumes: a context property named `dialController` of type `DialController*` (wired in Task 11), specifically `menuOpen` (bool property), `highlightedIndex` (int property), `hudRequested(iconName, valueLabel)` (signal), `functionCount()`, `displayNameAt(index)`, `iconNameAt(index)` (invokable methods) — all already implemented in Task 8.
 - Note: no automated test — QML visuals are verified manually per the design's testing section. This task's "test" step is a manual launch checklist.
+- **Decision (made during implementation):** `iconNameAt(index)`/`hudRequested`'s `iconName` are captured but deliberately **not rendered** in v1 — QML has no built-in way to load freedesktop icon-theme names (e.g. `"audio-volume-high"`) directly, and building that (a custom `QQuickImageProvider` wrapping `QIcon::fromTheme`, or bundling SVG assets) is new architecture outside this plan's scope. The radial menu and HUD are text-label-only for v1; this is a known, accepted limitation, not a defect — a follow-up task can add a `QQuickImageProvider` later without touching any already-built code, since `iconNameAt`/`iconName` are already fully wired through and just need a renderer.
 
 - [ ] **Step 1: Write `RadialMenu.qml`**
 
