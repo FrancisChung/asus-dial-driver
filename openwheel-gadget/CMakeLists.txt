@@ -17,8 +17,17 @@ qt_add_library(openwheel-gadget-core STATIC
     src/FunctionRegistry.cpp
     src/ProcessRunner.h
     src/ProcessRunner.cpp
+    src/DBusCaller.h
+    src/QtDBusCaller.h
+    src/QtDBusCaller.cpp
+    src/LogindSession.h
+    src/LogindSession.cpp
+    src/Backlight.h
+    src/Backlight.cpp
     src/functions/VolumeFunction.h
     src/functions/VolumeFunction.cpp
+    src/functions/BrightnessFunction.h
+    src/functions/BrightnessFunction.cpp
 )
 target_link_libraries(openwheel-gadget-core PUBLIC
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Qml Qt6::DBus
