@@ -15,6 +15,10 @@ qt_add_library(openwheel-gadget-core STATIC
     src/DialFunction.h
     src/FunctionRegistry.h
     src/FunctionRegistry.cpp
+    src/ProcessRunner.h
+    src/ProcessRunner.cpp
+    src/functions/VolumeFunction.h
+    src/functions/VolumeFunction.cpp
 )
 target_link_libraries(openwheel-gadget-core PUBLIC
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Qml Qt6::DBus
