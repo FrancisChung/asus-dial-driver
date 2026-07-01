@@ -33,6 +33,12 @@ qt_add_library(openwheel-gadget-core STATIC
     src/functions/ScrollBackend.h
     src/functions/ScrollFunction.h
     src/functions/ScrollFunction.cpp
+    src/functions/X11ScrollBackend.h
+    src/functions/X11ScrollBackend.cpp
+    src/functions/UinputScrollBackend.h
+    src/functions/UinputScrollBackend.cpp
+    src/functions/ScrollBackendFactory.h
+    src/functions/ScrollBackendFactory.cpp
 )
 target_link_libraries(openwheel-gadget-core PUBLIC
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Qml Qt6::DBus
