@@ -29,3 +29,7 @@ add_test(NAME DBusListenerTest COMMAND test_dbuslistener)
 qt_add_executable(test_dialcontroller test_dialcontroller.cpp)
 target_link_libraries(test_dialcontroller PRIVATE openwheel-gadget-core Qt6::Test)
 add_test(NAME DialControllerTest COMMAND test_dialcontroller)
+
+qt_add_executable(test_traycontroller test_traycontroller.cpp)
+target_link_libraries(test_traycontroller PRIVATE openwheel-gadget-core Qt6::Test)
+add_test(NAME TrayControllerTest COMMAND test_traycontroller)
