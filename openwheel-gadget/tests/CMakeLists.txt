@@ -1,1 +1,3 @@
-# Test executables are added by later tasks.
+qt_add_executable(test_functionregistry test_functionregistry.cpp)
+target_link_libraries(test_functionregistry PRIVATE openwheel-gadget-core Qt6::Test)
+add_test(NAME FunctionRegistryTest COMMAND test_functionregistry)
