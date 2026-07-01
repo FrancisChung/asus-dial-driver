@@ -197,7 +197,7 @@ rm -rf build && mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
 cmake --build .
 ```
-Expected: build succeeds, produces `openwheel-gadget/build/openwheel-gadget` executable. If `Qt6` isn't found, install `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev` (Debian/Ubuntu naming) first.
+Expected: build succeeds, produces `openwheel-gadget/build/openwheel-gadget` executable. If `Qt6` isn't found, install `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev` (Debian/Ubuntu naming) first. Note: these are build-time (`-dev`) packages only — the runtime smoke test in Step 7 also needs `qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript` installed, or the executable will build fine but exit immediately with "module ... is not installed" QML errors.
 
 - [ ] **Step 7: Runtime smoke test (headless)**
 
@@ -2634,6 +2634,11 @@ Read the current `README.md` first, then append a new section (use the Edit tool
 ## openwheel-gadget (tray + overlay)
 
 Build dependencies (Debian/Ubuntu naming): `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev`.
+
+Runtime dependencies (also needed to actually run the built binary, not just compile it):
+`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript`. Without these,
+the binary builds and links fine but exits immediately with "module ... is not installed" QML
+errors as soon as it tries to load `DialOverlay.qml`.
 
 ```bash
 cd openwheel-gadget
