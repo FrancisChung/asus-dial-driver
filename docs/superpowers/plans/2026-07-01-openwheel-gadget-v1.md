@@ -6,11 +6,11 @@
 
 **Architecture:** Single process. `DBusListener` receives daemon signals and forwards them to `DialController`, a state machine that times press-and-hold to open a radial menu, routes rotation either to menu navigation or to the active `DialFunction`. Four `DialFunction` implementations (Volume, Brightness, Scroll, Media) live behind a common interface in a `FunctionRegistry`, making it trivial to add more later. A `TrayController`/`TrayIcon` pair provides enable/disable + quit. QML (`DialOverlay.qml`) renders the radial menu and a lightweight HUD.
 
-**Tech Stack:** Qt 6.5+ (Core, Gui, Widgets, Qml, Quick, DBus, Test), CMake, C++17, libXtst (X11 scroll), Linux uinput (Wayland scroll, best-effort).
+**Tech Stack:** Qt 6.4+ (Core, Gui, Widgets, Qml, Quick, DBus, Test), CMake, C++17, libXtst (X11 scroll), Linux uinput (Wayland scroll, best-effort).
 
 ## Global Constraints
 
-- Qt 6.5 minimum (required for `QQmlApplicationEngine::loadFromModule` and `qt_add_qml_module`).
+- Qt 6.4 minimum (this is what's available via standard apt on the target dev distro; `qt_add_qml_module`, used for the QML module, has existed since Qt 6.2, so 6.4 is sufficient). QML is loaded via `engine.load(QUrl("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml"))`, not `loadFromModule()` (a 6.5+-only convenience wrapper around the same qrc path) — no visual/behavioral difference, purely which C++ API loads the same QML files.
 - No changes to `openwheel-daemon` — v1 uses only the existing `Rotate`(int32 ±1) / `Press`(int32 1|0) signals on `org.asus.dial` / `/org/asus/dial`, session bus.
 - Fixed function set for v1: system volume, screen brightness, scroll, media seek. No per-app context, no rotation-speed sensitivity (daemon doesn't report it).
 - Hold threshold: 400ms (`Press=1` to menu-open).
@@ -95,7 +95,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Qml Quick DBus Test)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets Qml Quick DBus Test)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(XTST REQUIRED xtst)
 
@@ -150,6 +150,7 @@ public:
 // openwheel-gadget/src/main.cpp
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QUrl>
 
 int main(int argc, char *argv[])
 {
@@ -157,7 +158,7 @@ int main(int argc, char *argv[])
     app.setQuitOnLastWindowClosed(false);
 
     QQmlApplicationEngine engine;
-    engine.loadFromModule("OpenWheelGadget", "DialOverlay");
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml")));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
@@ -2489,6 +2490,7 @@ git commit -m "gadget: add radial menu and HUD QML overlay"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QUrl>
 
 #include "FunctionRegistry.h"
 #include "ProcessRunner.h"
@@ -2545,7 +2547,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("dialController"), &dialController);
-    engine.loadFromModule("OpenWheelGadget", "DialOverlay");
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml")));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
