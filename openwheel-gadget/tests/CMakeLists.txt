@@ -13,3 +13,7 @@ add_test(NAME BrightnessFunctionTest COMMAND test_brightnessfunction)
 qt_add_executable(test_logindsession test_logindsession.cpp)
 target_link_libraries(test_logindsession PRIVATE openwheel-gadget-core Qt6::Test Qt6::DBus)
 add_test(NAME LogindSessionTest COMMAND test_logindsession)
+
+qt_add_executable(test_mediafunction test_mediafunction.cpp)
+target_link_libraries(test_mediafunction PRIVATE openwheel-gadget-core Qt6::Test Qt6::DBus)
+add_test(NAME MediaFunctionTest COMMAND test_mediafunction)
