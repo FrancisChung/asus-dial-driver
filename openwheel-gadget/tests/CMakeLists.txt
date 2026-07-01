@@ -25,3 +25,7 @@ add_test(NAME ScrollFunctionTest COMMAND test_scrollfunction)
 qt_add_executable(test_dbuslistener test_dbuslistener.cpp)
 target_link_libraries(test_dbuslistener PRIVATE openwheel-gadget-core Qt6::Test Qt6::DBus)
 add_test(NAME DBusListenerTest COMMAND test_dbuslistener)
+
+qt_add_executable(test_dialcontroller test_dialcontroller.cpp)
+target_link_libraries(test_dialcontroller PRIVATE openwheel-gadget-core Qt6::Test)
+add_test(NAME DialControllerTest COMMAND test_dialcontroller)
