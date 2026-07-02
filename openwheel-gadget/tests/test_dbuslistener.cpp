@@ -7,10 +7,20 @@
 class TestDBusListener : public QObject {
     Q_OBJECT
 private slots:
+    void cleanup();
     void rotateSignalEmitsRotated();
     void pressSignalEmitsPressChanged();
-    void isDaemonConnectedReflectsInitialBusState();
+    void isDaemonConnectedTrueWhenServiceAlreadyOwned();
+    void isDaemonConnectedFalseWhenServiceNotOwned();
 };
+
+void TestDBusListener::cleanup()
+{
+    // Idempotent even if the service was never registered (or a test failed
+    // partway through) -- guarantees org.asus.dial is never left owned by
+    // this process after any single test method, pass or fail.
+    QDBusConnection::sessionBus().unregisterService(QStringLiteral("org.asus.dial"));
+}
 
 void TestDBusListener::rotateSignalEmitsRotated()
 {
@@ -40,21 +50,29 @@ void TestDBusListener::pressSignalEmitsPressChanged()
     QCOMPARE(spy.at(0).at(0).toBool(), true);
 }
 
-void TestDBusListener::isDaemonConnectedReflectsInitialBusState()
+void TestDBusListener::isDaemonConnectedTrueWhenServiceAlreadyOwned()
 {
-    // isDaemonConnected() must reflect whatever org.asus.dial's ownership state
-    // actually is on the session bus at construction time -- it should never
-    // silently default to "connected" regardless of reality. Note: this checks
-    // consistency with the real bus state rather than assuming "unregistered",
-    // since some environments may have an unrelated service already holding
-    // this bus name.
-    const bool registeredBeforeConstruction =
-        QDBusConnection::sessionBus().interface()->isServiceRegistered(
-            QStringLiteral("org.asus.dial"));
+    // Deterministically claim the exact well-known name DBusListener watches,
+    // then verify the getter reflects that it was already owned at
+    // construction time. cleanup() unregisters org.asus.dial unconditionally
+    // after this test, so an assertion failure here can't leak ownership into
+    // later tests.
+    QVERIFY(QDBusConnection::sessionBus().registerService(QStringLiteral("org.asus.dial")));
 
     DBusListener listener;
 
-    QCOMPARE(listener.isDaemonConnected(), registeredBeforeConstruction);
+    QVERIFY(listener.isDaemonConnected());
+}
+
+void TestDBusListener::isDaemonConnectedFalseWhenServiceNotOwned()
+{
+    // Ensure nothing owns it before constructing (defensive, in case a prior
+    // test left it registered).
+    QDBusConnection::sessionBus().unregisterService(QStringLiteral("org.asus.dial"));
+
+    DBusListener listener;
+
+    QVERIFY(!listener.isDaemonConnected());
 }
 
 QTEST_MAIN(TestDBusListener)
