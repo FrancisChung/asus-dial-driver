@@ -15,12 +15,21 @@ BacklightInfo readBacklightInfo()
 {
     BacklightInfo info;
     QDir backlightDir(QStringLiteral("/sys/class/backlight"));
-    const QStringList entries = backlightDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+    const QStringList entries =
+        backlightDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
     if (entries.isEmpty()) {
         return info;
     }
 
-    info.device = entries.first();
+    QString chosen = entries.first();
+    for (const QString &entry : entries) {
+        if (!entry.startsWith(QStringLiteral("acpi_video"))) {
+            chosen = entry;
+            break;
+        }
+    }
+    info.device = chosen;
+
     const QString basePath = backlightDir.filePath(info.device);
     info.current = readIntFile(basePath + QStringLiteral("/brightness"));
     info.max = readIntFile(basePath + QStringLiteral("/max_brightness"));

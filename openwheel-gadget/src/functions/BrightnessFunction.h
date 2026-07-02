@@ -1,10 +1,11 @@
 #pragma once
 #include "DialFunction.h"
 #include "DBusCaller.h"
+#include "BacklightReader.h"
 
 class BrightnessFunction : public DialFunction {
 public:
-    BrightnessFunction(DBusCaller *caller, QString sessionPath, QString device, int current, int max);
+    BrightnessFunction(DBusCaller *caller, QString sessionPath, BacklightReader *reader);
 
     QString id() const override;
     QString displayName() const override;
@@ -16,7 +17,5 @@ public:
 private:
     DBusCaller *m_caller;
     QString m_sessionPath;
-    QString m_device;
-    int m_current;
-    int m_max;
+    BacklightReader *m_reader;
 };

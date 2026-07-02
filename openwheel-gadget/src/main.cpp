@@ -9,6 +9,7 @@
 #include "QtDBusCaller.h"
 #include "LogindSession.h"
 #include "Backlight.h"
+#include "BacklightReader.h"
 #include "DBusListener.h"
 #include "DialController.h"
 #include "TrayController.h"
@@ -26,12 +27,11 @@ int main(int argc, char *argv[])
 
     QProcessRunner processRunner;
     QtDBusCaller dbusCaller;
+    RealBacklightReader backlightReader;
     const QString sessionPath = resolveLogindSessionPath(&dbusCaller);
-    const BacklightInfo backlight = readBacklightInfo();
 
     VolumeFunction volumeFunction(&processRunner);
-    BrightnessFunction brightnessFunction(&dbusCaller, sessionPath, backlight.device,
-                                          backlight.current, backlight.max);
+    BrightnessFunction brightnessFunction(&dbusCaller, sessionPath, &backlightReader);
     MediaFunction mediaFunction(&dbusCaller);
     ScrollFunction scrollFunction(createScrollBackend());
 

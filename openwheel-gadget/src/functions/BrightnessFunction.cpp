@@ -1,10 +1,8 @@
 #include "BrightnessFunction.h"
 #include <QVariant>
 
-BrightnessFunction::BrightnessFunction(DBusCaller *caller, QString sessionPath, QString device,
-                                       int current, int max)
-    : m_caller(caller), m_sessionPath(std::move(sessionPath)), m_device(std::move(device)),
-      m_current(current), m_max(max)
+BrightnessFunction::BrightnessFunction(DBusCaller *caller, QString sessionPath, BacklightReader *reader)
+    : m_caller(caller), m_sessionPath(std::move(sessionPath)), m_reader(reader)
 {
 }
 
@@ -14,20 +12,26 @@ QString BrightnessFunction::iconName() const { return QStringLiteral("display-br
 
 bool BrightnessFunction::isAvailable() const
 {
-    return !m_device.isEmpty() && m_max > 0 && !m_sessionPath.isEmpty();
+    const BacklightInfo info = m_reader->read();
+    return !info.device.isEmpty() && info.max > 0 && !m_sessionPath.isEmpty();
 }
 
 void BrightnessFunction::adjust(int direction)
 {
-    const int step = qMax(1, m_max * 5 / 100);
-    m_current = qBound(0, m_current + direction * step, m_max);
+    const BacklightInfo info = m_reader->read();
+    if (info.device.isEmpty() || info.max <= 0) {
+        return;
+    }
+    const int step = qMax(1, info.max * 5 / 100);
+    const int newValue = qBound(0, info.current + direction * step, info.max);
     m_caller->call(DBusBus::System, QStringLiteral("org.freedesktop.login1"), m_sessionPath,
                    QStringLiteral("org.freedesktop.login1.Session"), QStringLiteral("SetBrightness"),
-                   {QStringLiteral("backlight"), m_device, static_cast<uint>(m_current)});
+                   {QStringLiteral("backlight"), info.device, static_cast<uint>(newValue)});
 }
 
 QString BrightnessFunction::currentValueLabel() const
 {
-    const int percent = m_max > 0 ? m_current * 100 / m_max : 0;
+    const BacklightInfo info = m_reader->read();
+    const int percent = info.max > 0 ? info.current * 100 / info.max : 0;
     return QString::number(percent) + QStringLiteral("%");
 }

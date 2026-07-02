@@ -33,6 +33,8 @@ qt_add_library(openwheel-gadget-core STATIC
     src/LogindSession.cpp
     src/Backlight.h
     src/Backlight.cpp
+    src/BacklightReader.h
+    src/BacklightReader.cpp
     src/functions/VolumeFunction.h
     src/functions/VolumeFunction.cpp
     src/functions/BrightnessFunction.h
