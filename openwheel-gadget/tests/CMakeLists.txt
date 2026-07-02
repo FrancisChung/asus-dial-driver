@@ -33,3 +33,7 @@ add_test(NAME DialControllerTest COMMAND test_dialcontroller)
 qt_add_executable(test_traycontroller test_traycontroller.cpp)
 target_link_libraries(test_traycontroller PRIVATE openwheel-gadget-core Qt6::Test)
 add_test(NAME TrayControllerTest COMMAND test_traycontroller)
+
+qt_add_executable(test_asyncrotatedispatcher test_asyncrotatedispatcher.cpp)
+target_link_libraries(test_asyncrotatedispatcher PRIVATE openwheel-gadget-core Qt6::Test)
+add_test(NAME AsyncRotateDispatcherTest COMMAND test_asyncrotatedispatcher)

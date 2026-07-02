@@ -22,6 +22,13 @@ qt_add_library(openwheel-gadget-core STATIC
     src/DBusListener.cpp
     src/DialController.h
     src/DialController.cpp
+    src/RotateDispatcher.h
+    src/SyncRotateDispatcher.h
+    src/SyncRotateDispatcher.cpp
+    src/FunctionWorker.h
+    src/FunctionWorker.cpp
+    src/AsyncRotateDispatcher.h
+    src/AsyncRotateDispatcher.cpp
     src/TrayController.h
     src/TrayController.cpp
     src/TrayIcon.h

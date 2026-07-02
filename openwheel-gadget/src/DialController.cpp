@@ -4,13 +4,15 @@ namespace {
 constexpr int kHoldThresholdMs = 400;
 }
 
-DialController::DialController(FunctionRegistry *registry, const QString &settingsPath, QObject *parent)
-    : QObject(parent), m_registry(registry),
+DialController::DialController(FunctionRegistry *registry, RotateDispatcher *dispatcher,
+                                 const QString &settingsPath, QObject *parent)
+    : QObject(parent), m_registry(registry), m_dispatcher(dispatcher),
       m_settings(settingsPath.isEmpty() ? QSettings() : QSettings(settingsPath, QSettings::IniFormat))
 {
     m_holdTimer.setSingleShot(true);
     m_holdTimer.setInterval(kHoldThresholdMs);
     connect(&m_holdTimer, &QTimer::timeout, this, &DialController::onHoldTimerFired);
+    connect(m_dispatcher, &RotateDispatcher::hudReady, this, &DialController::hudRequested);
 
     const QString savedId = m_settings.value(QStringLiteral("dial/activeFunction")).toString();
     const int savedIndex = m_registry->indexOf(savedId);
@@ -69,9 +71,8 @@ void DialController::onRotated(int direction)
     }
 
     DialFunction *function = m_registry->at(m_activeIndex);
-    if (function && function->isAvailable()) {
-        function->adjust(direction);
-        emit hudRequested(function->iconName(), function->currentValueLabel());
+    if (function) {
+        m_dispatcher->dispatch(function, direction);
     }
 }
 

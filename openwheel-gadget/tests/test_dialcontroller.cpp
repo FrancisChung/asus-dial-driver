@@ -4,6 +4,7 @@
 #include "DialController.h"
 #include "FunctionRegistry.h"
 #include "FakeDialFunction.h"
+#include "SyncRotateDispatcher.h"
 
 class TestDialController : public QObject {
     Q_OBJECT
@@ -31,7 +32,8 @@ void TestDialController::quickRotateAdjustsActiveFunctionWithoutOpeningMenu()
     FunctionRegistry registry;
     FakeDialFunction volume("volume");
     registry.registerFunction(&volume);
-    DialController controller(&registry, tempSettingsPath());
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
 
     controller.onRotated(1);
 
@@ -45,7 +47,8 @@ void TestDialController::holdingPastThresholdOpensMenu()
     FunctionRegistry registry;
     FakeDialFunction volume("volume");
     registry.registerFunction(&volume);
-    DialController controller(&registry, tempSettingsPath());
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
     QSignalSpy spy(&controller, &DialController::menuOpenChanged);
 
     controller.onPressChanged(true);
@@ -60,7 +63,8 @@ void TestDialController::rotatingWhileMenuOpenMovesHighlight()
     FakeDialFunction scroll("scroll");
     registry.registerFunction(&volume);
     registry.registerFunction(&scroll);
-    DialController controller(&registry, tempSettingsPath());
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
 
     controller.onPressChanged(true);
     QSignalSpy spy(&controller, &DialController::menuOpenChanged);
@@ -79,7 +83,8 @@ void TestDialController::releasingWhileMenuOpenConfirmsSelection()
     FakeDialFunction scroll("scroll");
     registry.registerFunction(&volume);
     registry.registerFunction(&scroll);
-    DialController controller(&registry, tempSettingsPath());
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
 
     controller.onPressChanged(true);
     QSignalSpy menuSpy(&controller, &DialController::menuOpenChanged);
@@ -101,7 +106,8 @@ void TestDialController::disablingClosesMenuAndIgnoresInput()
     FunctionRegistry registry;
     FakeDialFunction volume("volume");
     registry.registerFunction(&volume);
-    DialController controller(&registry, tempSettingsPath());
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
 
     controller.onPressChanged(true);
     QSignalSpy menuSpy(&controller, &DialController::menuOpenChanged);

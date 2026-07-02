@@ -3,14 +3,15 @@
 #include <QTimer>
 #include <QSettings>
 #include "FunctionRegistry.h"
+#include "RotateDispatcher.h"
 
 class DialController : public QObject {
     Q_OBJECT
     Q_PROPERTY(bool menuOpen READ isMenuOpen NOTIFY menuOpenChanged)
     Q_PROPERTY(int highlightedIndex READ highlightedIndex NOTIFY highlightedIndexChanged)
 public:
-    explicit DialController(FunctionRegistry *registry, const QString &settingsPath = QString(),
-                             QObject *parent = nullptr);
+    explicit DialController(FunctionRegistry *registry, RotateDispatcher *dispatcher,
+                             const QString &settingsPath = QString(), QObject *parent = nullptr);
 
     bool isMenuOpen() const;
     int highlightedIndex() const;
@@ -37,6 +38,7 @@ private slots:
 
 private:
     FunctionRegistry *m_registry;
+    RotateDispatcher *m_dispatcher;
     QTimer m_holdTimer;
     QSettings m_settings;
     bool m_pressed = false;

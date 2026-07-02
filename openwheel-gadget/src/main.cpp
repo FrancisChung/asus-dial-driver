@@ -12,6 +12,7 @@
 #include "BacklightReader.h"
 #include "DBusListener.h"
 #include "DialController.h"
+#include "AsyncRotateDispatcher.h"
 #include "TrayController.h"
 #include "TrayIcon.h"
 #include "functions/VolumeFunction.h"
@@ -41,7 +42,8 @@ int main(int argc, char *argv[])
     registry.registerFunction(&brightnessFunction);
     registry.registerFunction(&mediaFunction);
 
-    DialController dialController(&registry);
+    AsyncRotateDispatcher rotateDispatcher;
+    DialController dialController(&registry, &rotateDispatcher);
     DBusListener dbusListener;
     TrayController trayController;
     TrayIcon trayIcon(&trayController);
