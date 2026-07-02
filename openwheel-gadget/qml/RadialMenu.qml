@@ -12,7 +12,9 @@ Item {
             width: 64
             height: 64
             radius: width / 2
-            color: index === dialController.highlightedIndex ? "#3daee9" : "#444444"
+            color: index === dialController.highlightedIndex ? "#C9A87C" : "#1a1a1a"
+            border.color: "#C9A87C"
+            border.width: 1.5
             opacity: {
                 var _menuOpenTrigger = dialController.menuOpen
                 return dialController.isAvailableAt(index) ? 1.0 : 0.35
@@ -27,12 +29,17 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: dialController.displayNameAt(index)
-                color: "white"
+                color: index === dialController.highlightedIndex ? "#1a1a1a" : "#C9A87C"
                 font.pixelSize: 10
+                font.letterSpacing: 0.5
                 wrapMode: Text.WordWrap
                 width: parent.width - 8
                 horizontalAlignment: Text.AlignHCenter
             }
         }
+    }
+
+    CenterLogo {
+        anchors.centerIn: parent
     }
 }
