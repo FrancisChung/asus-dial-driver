@@ -11,10 +11,11 @@ public:
     QString iconName() const override { return m_id + "-icon"; }
     bool isAvailable() const override { return m_available; }
     void adjust(int direction) override { lastDirection = direction; adjustCallCount++; }
-    QString currentValueLabel() const override { return QStringLiteral("42"); }
+    QString currentValueLabel() const override { return valueLabel; }
 
     QString m_id;
     bool m_available;
     int lastDirection = 0;
     int adjustCallCount = 0;
+    QString valueLabel = QStringLiteral("42");
 };

@@ -1,4 +1,5 @@
 #include "FunctionWorker.h"
+#include "RotateDispatcher.h"
 
 void FunctionWorker::performRotate(DialFunction *function, int direction)
 {
@@ -6,5 +7,5 @@ void FunctionWorker::performRotate(DialFunction *function, int direction)
         return;
     }
     function->adjust(direction);
-    emit hudReady(function->iconName(), function->currentValueLabel());
+    emit hudReady(function->iconName(), composeHudValueLabel(function));
 }

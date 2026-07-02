@@ -37,3 +37,7 @@ add_test(NAME TrayControllerTest COMMAND test_traycontroller)
 qt_add_executable(test_asyncrotatedispatcher test_asyncrotatedispatcher.cpp)
 target_link_libraries(test_asyncrotatedispatcher PRIVATE openwheel-gadget-core Qt6::Test)
 add_test(NAME AsyncRotateDispatcherTest COMMAND test_asyncrotatedispatcher)
+
+qt_add_executable(test_rotatedispatcher test_rotatedispatcher.cpp)
+target_link_libraries(test_rotatedispatcher PRIVATE openwheel-gadget-core Qt6::Test)
+add_test(NAME RotateDispatcherTest COMMAND test_rotatedispatcher)

@@ -49,7 +49,7 @@ void TestAsyncRotateDispatcher::dispatchEmitsHudReadyWithCorrectValues()
     QVERIFY(spy.wait(1000));
     QCOMPARE(spy.count(), 1);
     QCOMPARE(spy.at(0).at(0).toString(), QStringLiteral("scroll-icon"));
-    QCOMPARE(spy.at(0).at(1).toString(), QStringLiteral("42"));
+    QCOMPARE(spy.at(0).at(1).toString(), QStringLiteral("scroll: 42"));
     QCOMPARE(function.lastDirection, -1);
 }
 
