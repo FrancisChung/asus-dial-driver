@@ -64,7 +64,7 @@ int main() {
                 syslog(LOG_DEBUG,"sent rotate minus");
             }
 
-            if (pkt.button == BUTTON_DOWN) {
+            if (pkt.button == BUTTON_DOWN && !was_down) {
                 send_dbus_signal(connection, DIAL_PRESS_SIGNAL, 1);
                 was_down = 1;
                 syslog(LOG_DEBUG,"sent button down");

@@ -6,11 +6,11 @@
 
 **Architecture:** Single process. `DBusListener` receives daemon signals and forwards them to `DialController`, a state machine that times press-and-hold to open a radial menu, routes rotation either to menu navigation or to the active `DialFunction`. Four `DialFunction` implementations (Volume, Brightness, Scroll, Media) live behind a common interface in a `FunctionRegistry`, making it trivial to add more later. A `TrayController`/`TrayIcon` pair provides enable/disable + quit. QML (`DialOverlay.qml`) renders the radial menu and a lightweight HUD.
 
-**Tech Stack:** Qt 6.5+ (Core, Gui, Widgets, Qml, Quick, DBus, Test), CMake, C++17, libXtst (X11 scroll), Linux uinput (Wayland scroll, best-effort).
+**Tech Stack:** Qt 6.4+ (Core, Gui, Widgets, Qml, Quick, DBus, Test), CMake, C++17, libXtst (X11 scroll), Linux uinput (Wayland scroll, best-effort).
 
 ## Global Constraints
 
-- Qt 6.5 minimum (required for `QQmlApplicationEngine::loadFromModule` and `qt_add_qml_module`).
+- Qt 6.4 minimum (this is what's available via standard apt on the target dev distro; `qt_add_qml_module`, used for the QML module, has existed since Qt 6.2, so 6.4 is sufficient). QML is loaded via `engine.load(QUrl("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml"))`, not `loadFromModule()` (a 6.5+-only convenience wrapper around the same qrc path) — no visual/behavioral difference, purely which C++ API loads the same QML files.
 - No changes to `openwheel-daemon` — v1 uses only the existing `Rotate`(int32 ±1) / `Press`(int32 1|0) signals on `org.asus.dial` / `/org/asus/dial`, session bus.
 - Fixed function set for v1: system volume, screen brightness, scroll, media seek. No per-app context, no rotation-speed sensitivity (daemon doesn't report it).
 - Hold threshold: 400ms (`Press=1` to menu-open).
@@ -95,7 +95,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Gui Widgets Qml Quick DBus Test)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Gui Widgets Qml Quick DBus Test)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(XTST REQUIRED xtst)
 
@@ -150,6 +150,7 @@ public:
 // openwheel-gadget/src/main.cpp
 #include <QApplication>
 #include <QQmlApplicationEngine>
+#include <QUrl>
 
 int main(int argc, char *argv[])
 {
@@ -157,7 +158,7 @@ int main(int argc, char *argv[])
     app.setQuitOnLastWindowClosed(false);
 
     QQmlApplicationEngine engine;
-    engine.loadFromModule("OpenWheelGadget", "DialOverlay");
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml")));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
@@ -196,7 +197,7 @@ rm -rf build && mkdir build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug
 cmake --build .
 ```
-Expected: build succeeds, produces `openwheel-gadget/build/openwheel-gadget` executable. If `Qt6` isn't found, install `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev` (Debian/Ubuntu naming) first.
+Expected: build succeeds, produces `openwheel-gadget/build/openwheel-gadget` executable. If `Qt6` isn't found, install `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev` (Debian/Ubuntu naming) first. Note: these are build-time (`-dev`) packages only — the runtime smoke test in Step 7 also needs `qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript` installed, or the executable will build fine but exit immediately with "module ... is not installed" QML errors.
 
 - [ ] **Step 7: Runtime smoke test (headless)**
 
@@ -2331,6 +2332,7 @@ git commit -m "gadget: add TrayIcon"
 **Interfaces:**
 - Consumes: a context property named `dialController` of type `DialController*` (wired in Task 11), specifically `menuOpen` (bool property), `highlightedIndex` (int property), `hudRequested(iconName, valueLabel)` (signal), `functionCount()`, `displayNameAt(index)`, `iconNameAt(index)` (invokable methods) — all already implemented in Task 8.
 - Note: no automated test — QML visuals are verified manually per the design's testing section. This task's "test" step is a manual launch checklist.
+- **Decision (made during implementation):** `iconNameAt(index)`/`hudRequested`'s `iconName` are captured but deliberately **not rendered** in v1 — QML has no built-in way to load freedesktop icon-theme names (e.g. `"audio-volume-high"`) directly, and building that (a custom `QQuickImageProvider` wrapping `QIcon::fromTheme`, or bundling SVG assets) is new architecture outside this plan's scope. The radial menu and HUD are text-label-only for v1; this is a known, accepted limitation, not a defect — a follow-up task can add a `QQuickImageProvider` later without touching any already-built code, since `iconNameAt`/`iconName` are already fully wired through and just need a renderer.
 
 - [ ] **Step 1: Write `RadialMenu.qml`**
 
@@ -2489,6 +2491,7 @@ git commit -m "gadget: add radial menu and HUD QML overlay"
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QUrl>
 
 #include "FunctionRegistry.h"
 #include "ProcessRunner.h"
@@ -2545,7 +2548,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("dialController"), &dialController);
-    engine.loadFromModule("OpenWheelGadget", "DialOverlay");
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/OpenWheelGadget/DialOverlay.qml")));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
@@ -2632,6 +2635,11 @@ Read the current `README.md` first, then append a new section (use the Edit tool
 ## openwheel-gadget (tray + overlay)
 
 Build dependencies (Debian/Ubuntu naming): `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev`.
+
+Runtime dependencies (also needed to actually run the built binary, not just compile it):
+`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript`. Without these,
+the binary builds and links fine but exits immediately with "module ... is not installed" QML
+errors as soon as it tries to load `DialOverlay.qml`.
 
 ```bash
 cd openwheel-gadget
