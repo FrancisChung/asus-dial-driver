@@ -21,6 +21,13 @@ cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
 
+**Running tests:** use `QT_QPA_PLATFORM=offscreen ctest --output-on-failure` (no display server
+needed). If any test involving D-Bus fails, or if you have `openwheel-daemon` (or any other service
+already registered on `org.asus.dial`) running while testing, wrap the command in
+`dbus-run-session --`, e.g. `dbus-run-session -- env QT_QPA_PLATFORM=offscreen ctest
+--output-on-failure` — some tests take temporary ownership of that D-Bus name, which conflicts with
+a real daemon (or any other owner) already holding it on your regular session bus.
+
 Run `./openwheel-gadget` (requires `openwheel-daemon`'s `asus_wheel` running and emitting D-Bus
 signals for the dial to actually do anything; the gadget also works with signals sent manually via
 `dbus-send`, useful for testing without the physical hardware. The daemon emits `Rotate` (int32 ±1)
