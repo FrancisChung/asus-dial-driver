@@ -26,15 +26,12 @@ Item {
                + (root.height / 2 - 40) * Math.sin(2 * Math.PI * index / root.count - Math.PI / 2)
                - height / 2
 
-            Text {
+            DialIcon {
                 anchors.centerIn: parent
-                text: dialController.displayNameAt(index)
+                width: 28
+                height: 28
+                iconId: dialController.iconNameAt(index)
                 color: index === dialController.highlightedIndex ? "#1a1a1a" : "#C9A87C"
-                font.pixelSize: 10
-                font.letterSpacing: 0.5
-                wrapMode: Text.WordWrap
-                width: parent.width - 8
-                horizontalAlignment: Text.AlignHCenter
             }
         }
     }
