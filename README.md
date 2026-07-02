@@ -102,9 +102,10 @@ dbus-send --session --type=signal /org/asus/dial org.asus.dial.Press int32:1
 Build (Debian/Ubuntu naming): `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev`.
 
 Runtime dependencies (also needed to actually run the built binary, not just compile it):
-`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript`. Without these,
-the binary builds and links fine but exits immediately with "module ... is not installed" QML
-errors as soon as it tries to load `DialOverlay.qml`.
+`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript
+qml6-module-qtquick-shapes`. Without these, the binary builds and links fine but exits immediately
+with "module ... is not installed" QML errors as soon as it tries to load `DialOverlay.qml` (or,
+for the `qtquick-shapes` module specifically, `RadialMenu.qml`'s icons).
 
 ### Autostart
 
