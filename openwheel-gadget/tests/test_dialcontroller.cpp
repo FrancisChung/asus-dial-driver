@@ -14,6 +14,7 @@ private slots:
     void rotatingWhileMenuOpenMovesHighlight();
     void releasingWhileMenuOpenConfirmsSelection();
     void disablingClosesMenuAndIgnoresInput();
+    void duplicatePressSignalWhileHeldDoesNotResetHighlight();
 
 private:
     QString tempSettingsPath();
@@ -118,6 +119,37 @@ void TestDialController::disablingClosesMenuAndIgnoresInput()
 
     controller.onRotated(1);
     QCOMPARE(volume.adjustCallCount, 0);
+}
+
+void TestDialController::duplicatePressSignalWhileHeldDoesNotResetHighlight()
+{
+    FunctionRegistry registry;
+    FakeDialFunction volume("volume");
+    FakeDialFunction scroll("scroll");
+    registry.registerFunction(&volume);
+    registry.registerFunction(&scroll);
+    SyncRotateDispatcher dispatcher;
+    DialController controller(&registry, &dispatcher, tempSettingsPath());
+
+    controller.onPressChanged(true);
+    QSignalSpy menuSpy(&controller, &DialController::menuOpenChanged);
+    QVERIFY(menuSpy.wait(1000));
+
+    controller.onRotated(1);
+    QCOMPARE(controller.highlightedIndex(), 1);
+
+    // Simulate the daemon's spurious duplicate Press=1 signal while the button
+    // is still physically held down (the confirmed hardware bug).
+    controller.onPressChanged(true);
+
+    // Give a broken implementation's wrongly-restarted hold timer a chance to
+    // fire and reset the highlight back to the active index.
+    QTest::qWait(500);
+
+    QCOMPARE(controller.highlightedIndex(), 1);
+
+    controller.onPressChanged(false);
+    QCOMPARE(controller.activeFunctionId(), QStringLiteral("scroll"));
 }
 
 QTEST_MAIN(TestDialController)

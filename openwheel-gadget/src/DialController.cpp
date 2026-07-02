@@ -82,6 +82,10 @@ void DialController::onPressChanged(bool pressed)
         return;
     }
 
+    if (pressed == m_pressed) {
+        return; // redundant signal (e.g. a duplicate "still pressed" event) — not a real transition
+    }
+
     m_pressed = pressed;
     if (pressed) {
         m_holdTimer.start();
