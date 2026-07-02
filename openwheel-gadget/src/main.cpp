@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
     QObject::connect(&trayController, &TrayController::quitRequested, &app, &QApplication::quit);
     QObject::connect(&dbusListener, &DBusListener::daemonConnectedChanged, &trayIcon,
                      &TrayIcon::setDaemonConnected);
+    trayIcon.setDaemonConnected(dbusListener.isDaemonConnected());
 
     trayIcon.show();
 

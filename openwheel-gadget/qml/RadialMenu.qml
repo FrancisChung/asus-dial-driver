@@ -13,7 +13,10 @@ Item {
             height: 64
             radius: width / 2
             color: index === dialController.highlightedIndex ? "#3daee9" : "#444444"
-            opacity: dialController.isAvailableAt(index) ? 1.0 : 0.35
+            opacity: {
+                var _menuOpenTrigger = dialController.menuOpen
+                return dialController.isAvailableAt(index) ? 1.0 : 0.35
+            }
             x: root.width / 2
                + (root.width / 2 - 40) * Math.cos(2 * Math.PI * index / root.count - Math.PI / 2)
                - width / 2

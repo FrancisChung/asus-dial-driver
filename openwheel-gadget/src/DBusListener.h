@@ -7,6 +7,8 @@ class DBusListener : public QObject {
 public:
     explicit DBusListener(QObject *parent = nullptr);
 
+    bool isDaemonConnected() const;
+
 signals:
     void rotated(int direction);
     void pressChanged(bool pressed);
@@ -18,4 +20,5 @@ private slots:
 
 private:
     QDBusServiceWatcher m_watcher;
+    bool m_daemonConnected = false;
 };

@@ -20,8 +20,8 @@ private:
 
 QString TestDialController::tempSettingsPath()
 {
-    static QTemporaryFile file;
-    file.setAutoRemove(true);
+    QTemporaryFile file;
+    file.setAutoRemove(false);  // must survive past this function's return; DialController will open it by path
     file.open();
     return file.fileName();
 }
