@@ -23,11 +23,17 @@ cmake --build .
 
 Run `./openwheel-gadget` (requires `openwheel-daemon`'s `asus_wheel` running and emitting D-Bus
 signals for the dial to actually do anything; the gadget also works with signals sent manually via
-`dbus-send`, useful for testing without the physical hardware — see the daemon's D-Bus interface
-above).
+`dbus-send`, useful for testing without the physical hardware. The daemon emits `Rotate` (int32 ±1)
+and `Press` (int32 1|0) signals on `org.asus.dial` / `/org/asus/dial` on the session bus).
 
-To start automatically with your session, copy `openwheel-gadget/openwheel-gadget.desktop` to
-`~/.config/autostart/`.
+To start automatically with your session, first symlink the built binary to your PATH (if not already
+done):
+```bash
+mkdir -p ~/.local/bin
+ln -sf "$(pwd)/openwheel-gadget/build/openwheel-gadget" ~/.local/bin/openwheel-gadget
+```
+
+Then copy `openwheel-gadget/openwheel-gadget.desktop` to `~/.config/autostart/`.
 
 **Wayland scroll support (optional):** the Scroll dial function uses X11's XTest extension by
 default and works out of the box on any X11 session. On Wayland, scroll instead uses a `uinput`
