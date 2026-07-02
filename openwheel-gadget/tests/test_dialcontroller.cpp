@@ -92,10 +92,16 @@ void TestDialController::releasingWhileMenuOpenConfirmsSelection()
     QVERIFY(menuSpy.wait(1000));
 
     controller.onRotated(1);
+    QSignalSpy hudSpy(&controller, &DialController::hudRequested);
     controller.onPressChanged(false);
 
     QVERIFY(!controller.isMenuOpen());
     QCOMPARE(controller.activeFunctionId(), QStringLiteral("scroll"));
+
+    QCOMPARE(hudSpy.count(), 1);
+    const QList<QVariant> hudArgs = hudSpy.takeFirst();
+    QCOMPARE(hudArgs.at(0).toString(), scroll.iconName());
+    QCOMPARE(hudArgs.at(1).toString(), scroll.displayName());
 
     controller.onRotated(1);
     QCOMPARE(scroll.adjustCallCount, 1);

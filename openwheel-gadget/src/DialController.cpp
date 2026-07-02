@@ -106,6 +106,9 @@ void DialController::onPressChanged(bool pressed)
         }
         emit menuOpenChanged();
         emit activeFunctionChanged();
+        if (function) {
+            emit hudRequested(function->iconName(), function->displayName());
+        }
     }
 }
 
