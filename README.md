@@ -26,11 +26,11 @@ signals for the dial to actually do anything; the gadget also works with signals
 `dbus-send`, useful for testing without the physical hardware. The daemon emits `Rotate` (int32 ±1)
 and `Press` (int32 1|0) signals on `org.asus.dial` / `/org/asus/dial` on the session bus).
 
-To start automatically with your session, first symlink the built binary to your PATH (if not already
-done):
+To start automatically with your session, first symlink the built binary to your PATH (run from inside
+the `build/` directory used above):
 ```bash
 mkdir -p ~/.local/bin
-ln -sf "$(pwd)/openwheel-gadget/build/openwheel-gadget" ~/.local/bin/openwheel-gadget
+ln -sf "$(pwd)/openwheel-gadget" ~/.local/bin/openwheel-gadget
 ```
 
 Then copy `openwheel-gadget/openwheel-gadget.desktop` to `~/.config/autostart/`.
