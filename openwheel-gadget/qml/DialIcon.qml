@@ -95,9 +95,9 @@ Item {
                 fillColor: "transparent"
                 capStyle: ShapePath.RoundCap
                 joinStyle: ShapePath.RoundJoin
-                startX: 9; startY: 14
-                PathLine { x: 14; y: 9 }
-                PathLine { x: 19; y: 14 }
+                startX: 8; startY: 11
+                PathLine { x: 14; y: 5 }
+                PathLine { x: 20; y: 11 }
             }
             ShapePath {
                 strokeColor: root.color
@@ -105,9 +105,9 @@ Item {
                 fillColor: "transparent"
                 capStyle: ShapePath.RoundCap
                 joinStyle: ShapePath.RoundJoin
-                startX: 9; startY: 15
-                PathLine { x: 14; y: 20 }
-                PathLine { x: 19; y: 15 }
+                startX: 8; startY: 17
+                PathLine { x: 14; y: 23 }
+                PathLine { x: 20; y: 17 }
             }
         }
     }
