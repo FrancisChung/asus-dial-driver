@@ -5,6 +5,7 @@
 #ifndef OPENWHEEL_H
 #define OPENWHEEL_H
 
+// Last-resort fallback if find_hidraw_device() can't locate the dial by name.
 #define HIDRAW_DEVICE "/dev/hidraw2"
 #define DIAL_ROTATE_SIGNAL "Rotate"
 #define DIAL_PRESS_SIGNAL  "Press"
