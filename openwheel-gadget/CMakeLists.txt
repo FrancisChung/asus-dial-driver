@@ -77,6 +77,7 @@ qt_add_qml_module(openwheel-gadget
         qml/Hud.qml
         qml/CenterLogo.qml
         qml/DialIcon.qml
+        qml/RingWedge.qml
     RESOURCE_PREFIX /qt/qml
 )
 
