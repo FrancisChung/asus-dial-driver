@@ -6,6 +6,8 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`openwheel-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
+![Quick rotate adjusting Brightness, then press-hold-rotate-release picking a function from the radial menu](docs/media/demo-v1-basic.gif)
+
 ## What's here
 
 - **`openwheel-daemon`** — reads the Asus Dial's raw HID input and emits `Rotate`/`Press` events as
@@ -68,6 +70,26 @@ nothing already owns `org.asus.dial` on the session bus (reusing an already-runn
 otherwise), waits for it to register, then launches `openwheel-gadget`. It only stops the daemon it
 started itself when you quit the gadget — it won't touch a daemon started some other way.
 
+Run it as your normal user — never with `sudo`. Nothing in this stack needs root once the udev
+rule below is installed, and running any part of it as root breaks Volume/Brightness/Media: they
+depend on your session D-Bus bus, PipeWire/PulseAudio, and systemd-logind session, none of which a
+root process can reach (a root process also can't be authenticated on your session D-Bus bus at
+all — it's rejected by D-Bus's own security policy, not just missing environment variables).
+
+### Permissions (one-time setup)
+
+The daemon needs read/write access to the dial's `hidraw` device, which is `root`-only by default.
+Install the provided udev rule to grant your user's `input` group access instead:
+```bash
+sudo cp udev/99-asus-dial-hidraw.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger --subsystem-match=hidraw
+```
+Then unplug/replug the dial (or reboot) if `ls -la /dev/hidraw*` doesn't already show `group input`
+on the dial's device. You also need to be a member of the `input` group yourself
+(`sudo usermod -aG input $USER`, then log out and back in) — most desktop setups already include
+this by default.
+
 ### Manual build
 
 **Daemon:**
@@ -76,10 +98,10 @@ cd openwheel-daemon
 cmake .
 make
 ```
-Produces `openwheel-daemon/asus_wheel`. It needs read access to the dial's HID device, which it
-finds automatically at startup by scanning `/sys/class/hidraw` for the ASUS2020 device (the
-hidraw number shifts depending on what else is plugged in, e.g. docks/hubs). Run it with
-`./asus_wheel`.
+Produces `openwheel-daemon/asus_wheel`. It needs read/write access to the dial's HID device, which
+it finds automatically at startup by scanning `/sys/class/hidraw` for the ASUS2020 device (the
+hidraw number shifts depending on what else is plugged in, e.g. docks/hubs) — see "Permissions"
+above for one-time setup so this doesn't require root. Run it with `./asus_wheel`.
 
 **Gadget:**
 ```bash
