@@ -1,0 +1,14 @@
+# Grants the "input" group read/write access to the ASUS Dial's hidraw node,
+# so openwheel-daemon can run as a normal user instead of root.
+#
+# Matched by the HID device's stable bus:vendor:product identity
+# (0018:0B05:0220 = I2C bus, ASUSTeK vendor ID, Dial product ID) rather than
+# the dynamically-assigned hidrawN number, which shifts depending on what
+# else is plugged in (docks, hubs, etc.) — see find_hidraw_device() in
+# openwheel-daemon/helpers.c for the same identification approach.
+#
+# Install: sudo cp udev/99-asus-dial-hidraw.rules /etc/udev/rules.d/
+#          sudo udevadm control --reload-rules
+#          sudo udevadm trigger --subsystem-match=hidraw
+# (unplug/replug the dial, or reboot, if the trigger doesn't pick it up)
+SUBSYSTEM=="hidraw", KERNELS=="0018:0B05:0220.*", GROUP="input", MODE="0660"
