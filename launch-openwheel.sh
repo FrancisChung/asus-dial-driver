@@ -12,7 +12,6 @@ DAEMON_DIR="$SCRIPT_DIR/openwheel-daemon"
 GADGET_DIR="$SCRIPT_DIR/openwheel-gadget"
 DAEMON_BIN="$DAEMON_DIR/asus_wheel"
 GADGET_BIN="$GADGET_DIR/build/openwheel-gadget"
-HIDRAW_DEVICE="/dev/hidraw2"
 DBUS_SERVICE="org.asus.dial"
 
 STARTED_DAEMON=0
@@ -32,20 +31,33 @@ service_registered() {
         string:"$DBUS_SERVICE" 2>/dev/null | grep -q "boolean true"
 }
 
+# hidraw numbering depends on USB/I2C enumeration order (docks, hubs, etc.
+# shift it), so find the dial by name instead of assuming a fixed path.
+# Mirrors find_hidraw_device() in openwheel-daemon/helpers.c.
+find_dial_hidraw_device() {
+    local dir uevent
+    for dir in /sys/class/hidraw/hidraw*; do
+        uevent="$dir/device/uevent"
+        if [ -r "$uevent" ] && grep -q "^HID_NAME=.*ASUS2020" "$uevent"; then
+            echo "/dev/$(basename "$dir")"
+            return 0
+        fi
+    done
+    return 1
+}
+
 echo "== openwheel launcher =="
 
-# 1. Build the daemon if it's missing.
-if [ ! -x "$DAEMON_BIN" ]; then
-    echo "Building openwheel-daemon..."
-    (cd "$DAEMON_DIR" && cmake . && make)
-fi
+# 1. Build the daemon. cmake/make are incremental — this is a fast no-op if
+#    nothing changed, so it always picks up source edits without needing a
+#    manual rebuild.
+echo "Building openwheel-daemon..."
+(cd "$DAEMON_DIR" && cmake . && make)
 
-# 2. Build the gadget if it's missing.
-if [ ! -x "$GADGET_BIN" ]; then
-    echo "Building openwheel-gadget..."
-    mkdir -p "$GADGET_DIR/build"
-    (cd "$GADGET_DIR/build" && cmake .. -DCMAKE_BUILD_TYPE=Release && cmake --build .)
-fi
+# 2. Build the gadget. Same incremental-build reasoning as above.
+echo "Building openwheel-gadget..."
+mkdir -p "$GADGET_DIR/build"
+(cd "$GADGET_DIR/build" && cmake .. -DCMAKE_BUILD_TYPE=Release && cmake --build .)
 
 # 3. Ensure a daemon owns org.asus.dial, starting one if needed.
 if service_registered; then
@@ -53,9 +65,9 @@ if service_registered; then
 else
     echo "No daemon currently owns org.asus.dial."
 
-    if [ ! -e "$HIDRAW_DEVICE" ]; then
-        echo "ERROR: $HIDRAW_DEVICE not found. Is the Asus Dial plugged in?" >&2
-        echo "(openwheel-daemon currently hardcodes this device path.)" >&2
+    HIDRAW_DEVICE="$(find_dial_hidraw_device || true)"
+    if [ -z "$HIDRAW_DEVICE" ]; then
+        echo "ERROR: No HID device matching ASUS2020 found under /sys/class/hidraw. Is the Asus Dial plugged in?" >&2
         exit 1
     fi
     if [ ! -r "$HIDRAW_DEVICE" ]; then

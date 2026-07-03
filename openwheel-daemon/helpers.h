@@ -15,9 +15,7 @@
 
 void send_dbus_signal(DBusConnection *connection, const char *signal_name, int value);
 
-int read_sysfs_file(const char *path, char *buffer, size_t buffer_size);
-
-int find_hidraw_device(char *device_path, size_t path_size);
+int find_hidraw_device(const char *sysfs_hidraw_path, char *device_path, size_t path_size);
 
 void daemonize();
 

@@ -130,33 +130,44 @@ void send_dbus_signal(DBusConnection *connection, const char *signal_name, int v
     dbus_message_unref(msg);
 }
 
-// Helper function to read a file into a buffer
-int read_sysfs_file(const char *path, char *buffer, size_t buffer_size) {
+// Search a sysfs uevent file for "KEY=value" and copy value into buffer.
+// Unlike a single fgets(), this scans every line since HID_NAME is rarely
+// the first line of the file.
+static int read_uevent_field(const char *path, const char *key, char *buffer, size_t buffer_size) {
     FILE *fp = fopen(path, "r");
     if (fp == NULL) {
         return -1;
     }
 
-    if (fgets(buffer, buffer_size, fp) == NULL) {
-        fclose(fp);
-        return -1;
+    char line[BUFFER_SIZE];
+    size_t key_len = strlen(key);
+    int found = -1;
+
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        if (strncmp(line, key, key_len) == 0 && line[key_len] == '=') {
+            size_t len = strlen(line);
+            if (len > 0 && line[len - 1] == '\n') {
+                line[len - 1] = '\0';
+            }
+            snprintf(buffer, buffer_size, "%s", line + key_len + 1);
+            found = 0;
+            break;
+        }
     }
 
     fclose(fp);
-
-    // Remove trailing newline if it exists
-    size_t len = strlen(buffer);
-    if (len > 0 && buffer[len - 1] == '\n') {
-        buffer[len - 1] = '\0';
-    }
-
-    return 0;
+    return found;
 }
 
-// Function to search for the ASUS2020 device in /sys/class/hidraw
-int find_hidraw_device(char *device_path, size_t path_size) {
+// Function to search for the ASUS2020 device in /sys/class/hidraw.
+// hidraw numbering depends on USB/I2C enumeration order, which shifts
+// whenever a dock, hub, or other HID device is present at boot, so the
+// device can't be found by a fixed /dev/hidrawN path. Devices don't expose
+// a device/product file for I2C-attached HID (only USB ones do), so the
+// device name is read from device/uevent's HID_NAME field instead.
+int find_hidraw_device(const char *sysfs_hidraw_path, char *device_path, size_t path_size) {
     struct dirent *entry;
-    DIR *dp = opendir(SYSFS_HIDRAW_PATH);
+    DIR *dp = opendir(sysfs_hidraw_path);
 
     if (dp == NULL) {
         perror("opendir");
@@ -166,18 +177,14 @@ int find_hidraw_device(char *device_path, size_t path_size) {
     // Iterate through the hidrawX directories
     while ((entry = readdir(dp)) != NULL) {
         if (entry->d_type == DT_LNK) {
-            char sysfs_device_path[BUFFER_SIZE];
-            char product_name[BUFFER_SIZE];
+            char uevent_path[BUFFER_SIZE];
+            char hid_name[BUFFER_SIZE];
 
-            // Build the path to the 'device' symlink
-            snprintf(sysfs_device_path, sizeof(sysfs_device_path),
-                     "%s%s/device/product", SYSFS_HIDRAW_PATH, entry->d_name);
+            snprintf(uevent_path, sizeof(uevent_path),
+                     "%s%s/device/uevent", sysfs_hidraw_path, entry->d_name);
 
-            // Read the product name of the HID device
-            if (read_sysfs_file(sysfs_device_path, product_name, sizeof(product_name)) == 0) {
-                // Check if the product name matches "ASUS2020"
-                if (strstr(product_name, DEVICE_NAME)) {
-                    // Build the path to the hidraw device
+            if (read_uevent_field(uevent_path, "HID_NAME", hid_name, sizeof(hid_name)) == 0) {
+                if (strstr(hid_name, DEVICE_NAME)) {
                     snprintf(device_path, path_size, "/dev/%s", entry->d_name);
                     closedir(dp);
                     return 0;  // Found the device

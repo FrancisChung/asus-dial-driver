@@ -12,9 +12,20 @@
 
 int main() {
     openlog("openwheel", LOG_PID, LOG_DAEMON);
-    int fd = open(HIDRAW_DEVICE, O_RDONLY);
+
+    char discovered_device[BUFFER_SIZE];
+    const char *hidraw_device = HIDRAW_DEVICE;
+    if (find_hidraw_device(SYSFS_HIDRAW_PATH, discovered_device, sizeof(discovered_device)) == 0) {
+        hidraw_device = discovered_device;
+        syslog(LOG_INFO, "Discovered ASUS dial at %s", hidraw_device);
+    } else {
+        syslog(LOG_WARNING, "Could not find %s in %s; falling back to hardcoded %s",
+               DEVICE_NAME, SYSFS_HIDRAW_PATH, hidraw_device);
+    }
+
+    int fd = open(hidraw_device, O_RDONLY);
     if (fd < 0) {
-        syslog(LOG_ERR, "Failed to open HID device %s", HIDRAW_DEVICE);
+        syslog(LOG_ERR, "Failed to open HID device %s", hidraw_device);
         return 1;
     }
 

@@ -76,9 +76,10 @@ cd openwheel-daemon
 cmake .
 make
 ```
-Produces `openwheel-daemon/asus_wheel`. It needs read access to the dial's HID device (currently
-hardcoded to `/dev/hidraw2` — if your dial shows up at a different path, symlink it or adjust
-`HIDRAW_DEVICE` in `openwheel-daemon/openwheel.h` and rebuild). Run it with `./asus_wheel`.
+Produces `openwheel-daemon/asus_wheel`. It needs read access to the dial's HID device, which it
+finds automatically at startup by scanning `/sys/class/hidraw` for the ASUS2020 device (the
+hidraw number shifts depending on what else is plugged in, e.g. docks/hubs). Run it with
+`./asus_wheel`.
 
 **Gadget:**
 ```bash
