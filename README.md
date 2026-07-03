@@ -6,6 +6,9 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`openwheel-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
+![Quick rotate adjusting Brightness, then press-hold-rotate-release picking a function from the radial menu](docs/media/demo-v1-basic.gif)
+*(from the earlier text-label build — this branch replaces the labels with icons, same interaction)*
+
 ## What's here
 
 - **`openwheel-daemon`** — reads the Asus Dial's raw HID input and emits `Rotate`/`Press` events as
