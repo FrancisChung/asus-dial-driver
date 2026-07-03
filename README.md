@@ -6,8 +6,19 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`openwheel-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
+## Demo
+
+The interaction is the same across versions — quick rotate adjusts whichever function is active;
+press-hold-rotate-release opens the radial menu to pick a different one — only the menu's look has
+changed:
+
+**v2 — icons**
+
+![Radial menu with icons: speaker (Volume), play/pause (Media), scroll chevrons (Scroll), sun (Brightness)](docs/media/demo-v2-icons.gif)
+
+**v1 — text labels**
+
 ![Quick rotate adjusting Brightness, then press-hold-rotate-release picking a function from the radial menu](docs/media/demo-v1-basic.gif)
-*(from the earlier text-label build — this branch replaces the labels with icons, same interaction)*
 
 ## What's here
 
@@ -126,10 +137,10 @@ dbus-send --session --type=signal /org/asus/dial org.asus.dial.Press int32:1
 Build (Debian/Ubuntu naming): `qt6-base-dev qt6-declarative-dev libqt6svg6-dev libxtst-dev`.
 
 Runtime dependencies (also needed to actually run the built binary, not just compile it):
-`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript
-qml6-module-qtquick-shapes`. Without these, the binary builds and links fine but exits immediately
-with "module ... is not installed" QML errors as soon as it tries to load `DialOverlay.qml` (or,
-for the `qtquick-shapes` module specifically, `RadialMenu.qml`'s icons).
+`qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-workerscript`, plus
+`qml6-module-qtquick-shapes` on the icon-based v2 UI (see Demo above) for `RadialMenu.qml`'s icons.
+Without these, the binary builds and links fine but exits immediately with "module ... is not
+installed" QML errors as soon as it tries to load `DialOverlay.qml`.
 
 ### Autostart
 
@@ -164,11 +175,10 @@ QT_QPA_PLATFORM=offscreen ctest --output-on-failure` — some tests take tempora
 D-Bus name, which conflicts with a real daemon (or any other owner) already holding it on your
 regular session bus.
 
-## Known limitations (v1)
+## Known limitations
 
-- Function icons aren't rendered — the radial menu and HUD are text-only. `DialFunction::iconName()`
-  is fully wired through but unused; rendering real icons later just needs a `QQuickImageProvider`,
-  no changes to any already-built code.
+- v1's radial menu and HUD are text-only; v2 replaces the labels with hand-drawn icons via
+  `DialIcon.qml` (see Demo above).
 - No per-app context — the active function is global, not tied to whichever app currently has
   focus.
 - No rotation-speed sensitivity — the daemon reports rotation direction only, not how fast you're
