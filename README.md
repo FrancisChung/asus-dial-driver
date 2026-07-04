@@ -9,7 +9,7 @@ a Surface-Dial-style control for volume, screen brightness, scrolling, and media
 ## Overview
 
 There are 3 different versions of the asus-dial-driver.
-The 3 different versions can be found in different branches of the repo.
+The 3 different versions can be found in different branches of the repo,
 v1-basic, v2-icons, v3-asus.
 
 The main branch is currently the same as <Insert Branch Name> as I think most people might prefer this UI.
