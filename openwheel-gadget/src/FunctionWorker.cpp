@@ -7,5 +7,8 @@ void FunctionWorker::performRotate(DialFunction *function, int direction)
         return;
     }
     function->adjust(direction);
-    emit hudReady(function->iconName(), composeHudValueLabel(function), function->currentValuePercent());
+    const int percent = function->currentValuePercent();
+    const QString label = percent >= 0 ? composeHudValueLabelFromPercent(function, percent)
+                                        : composeHudValueLabel(function);
+    emit hudReady(function->iconName(), label, percent);
 }

@@ -12,6 +12,16 @@ inline QString composeHudValueLabel(const DialFunction *function)
     return function->displayName() + QStringLiteral(": ") + value;
 }
 
+// Builds the same "DisplayName: NN%" label composeHudValueLabel() would, but
+// from an already-fetched percent instead of calling currentValueLabel() again
+// — avoids querying Volume/Brightness's backend (pactl/backlight) twice per
+// rotate tick. Only valid for the two functions where currentValuePercent()
+// is meaningful; callers fall back to composeHudValueLabel() when it's -1.
+inline QString composeHudValueLabelFromPercent(const DialFunction *function, int percent)
+{
+    return function->displayName() + QStringLiteral(": ") + QString::number(percent) + QStringLiteral("%");
+}
+
 class RotateDispatcher : public QObject {
     Q_OBJECT
 public:
