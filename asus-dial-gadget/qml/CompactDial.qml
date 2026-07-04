@@ -69,10 +69,16 @@ Item {
     // Drawn separately from the fill wedge above (not as that wedge's icon)
     // so it stays fixed at the top regardless of how far the fill has grown,
     // rather than riding the fill arc's midpoint around the ring.
+    //
+    // Volume and Brightness use DialIcon's PathAngleArc-based glyphs (speaker
+    // soundwaves / brightness rays), which don't render cleanly at this small
+    // size, so those two are left blank here rather than shown malformed;
+    // Scroll and Media's straight-line glyphs are unaffected.
     DialIcon {
         width: 22
         height: 22
-        iconId: root.iconName
+        iconId: (root.iconName === "audio-volume-high" || root.iconName === "display-brightness")
+            ? "" : root.iconName
         color: "#1a1a1a"
         x: parent.width / 2 + (48 + 80) / 2 * Math.cos(-Math.PI / 2) - width / 2
         y: parent.height / 2 + (48 + 80) / 2 * Math.sin(-Math.PI / 2) - height / 2
