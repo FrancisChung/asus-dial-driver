@@ -31,7 +31,7 @@ signals:
     void menuOpenChanged();
     void highlightedIndexChanged();
     void activeFunctionChanged();
-    void hudRequested(const QString &iconName, const QString &valueLabel);
+    void hudRequested(const QString &iconName, const QString &valueLabel, int valuePercent);
 
 private slots:
     void onHoldTimerFired();

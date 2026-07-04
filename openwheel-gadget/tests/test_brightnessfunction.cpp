@@ -15,6 +15,7 @@ private slots:
     void adjustClampsAtMax();
     void currentValueLabelIsPercentage();
     void adjustReflectsExternalBrightnessChangeBetweenCalls();
+    void currentValuePercentMatchesLabel();
 };
 
 void TestBrightnessFunction::adjustUpCallsSetBrightnessOnSystemBus()
@@ -75,6 +76,16 @@ void TestBrightnessFunction::adjustReflectsExternalBrightnessChangeBetweenCalls(
     reader.nextInfo = BacklightInfo{QStringLiteral("intel_backlight"), 10, 100};
     brightness.adjust(1);
     QCOMPARE(caller.lastArgs.at(2).toUInt(), 15u);
+}
+
+void TestBrightnessFunction::currentValuePercentMatchesLabel()
+{
+    FakeDBusCaller caller;
+    FakeBacklightReader reader;
+    reader.nextInfo = BacklightInfo{QStringLiteral("intel_backlight"), 25, 100};
+    BrightnessFunction brightness(&caller, QStringLiteral("/session/_31"), &reader);
+
+    QCOMPARE(brightness.currentValuePercent(), 25);
 }
 
 QTEST_MAIN(TestBrightnessFunction)

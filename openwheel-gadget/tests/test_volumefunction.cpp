@@ -22,6 +22,8 @@ private slots:
     void adjustUpCallsPactlWithPlus5Percent();
     void adjustDownCallsPactlWithMinus5Percent();
     void currentValueLabelParsesPercentage();
+    void currentValuePercentParsesPercentage();
+    void currentValuePercentReturnsMinusOneWhenUnparseable();
 };
 
 void TestVolumeFunction::adjustUpCallsPactlWithPlus5Percent()
@@ -50,6 +52,24 @@ void TestVolumeFunction::currentValueLabelParsesPercentage()
     VolumeFunction volume(&runner);
 
     QCOMPARE(volume.currentValueLabel(), QStringLiteral("50%"));
+}
+
+void TestVolumeFunction::currentValuePercentParsesPercentage()
+{
+    FakeProcessRunner runner;
+    runner.nextResult = ProcessResult{0, QStringLiteral("Volume: front-left: 32768 /  50% / 0.00 dB")};
+    VolumeFunction volume(&runner);
+
+    QCOMPARE(volume.currentValuePercent(), 50);
+}
+
+void TestVolumeFunction::currentValuePercentReturnsMinusOneWhenUnparseable()
+{
+    FakeProcessRunner runner;
+    runner.nextResult = ProcessResult{1, QStringLiteral("")};
+    VolumeFunction volume(&runner);
+
+    QCOMPARE(volume.currentValuePercent(), -1);
 }
 
 QTEST_MAIN(TestVolumeFunction)

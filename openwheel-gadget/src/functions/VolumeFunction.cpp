@@ -27,3 +27,12 @@ QString VolumeFunction::currentValueLabel() const
         QRegularExpression(QStringLiteral("(\\d+)%")).match(result.standardOutput);
     return match.hasMatch() ? match.captured(1) + QStringLiteral("%") : QStringLiteral("--");
 }
+
+int VolumeFunction::currentValuePercent() const
+{
+    const ProcessResult result = m_runner->run(
+        QStringLiteral("pactl"), {QStringLiteral("get-sink-volume"), QStringLiteral("@DEFAULT_SINK@")});
+    const QRegularExpressionMatch match =
+        QRegularExpression(QStringLiteral("(\\d+)%")).match(result.standardOutput);
+    return match.hasMatch() ? match.captured(1).toInt() : -1;
+}

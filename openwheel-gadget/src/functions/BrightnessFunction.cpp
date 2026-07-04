@@ -35,3 +35,9 @@ QString BrightnessFunction::currentValueLabel() const
     const int percent = info.max > 0 ? info.current * 100 / info.max : 0;
     return QString::number(percent) + QStringLiteral("%");
 }
+
+int BrightnessFunction::currentValuePercent() const
+{
+    const BacklightInfo info = m_reader->read();
+    return info.max > 0 ? info.current * 100 / info.max : -1;
+}

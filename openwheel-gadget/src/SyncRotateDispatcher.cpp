@@ -8,5 +8,5 @@ void SyncRotateDispatcher::dispatch(DialFunction *function, int direction)
         return;
     }
     function->adjust(direction);
-    emit hudReady(function->iconName(), composeHudValueLabel(function));
+    emit hudReady(function->iconName(), composeHudValueLabel(function), function->currentValuePercent());
 }
