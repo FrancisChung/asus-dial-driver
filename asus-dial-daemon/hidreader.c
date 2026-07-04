@@ -11,7 +11,7 @@
 
 
 int main() {
-    openlog("openwheel", LOG_PID, LOG_DAEMON);
+    openlog("asus-dial-daemon", LOG_PID, LOG_DAEMON);
 
     char discovered_device[BUFFER_SIZE];
     const char *hidraw_device = HIDRAW_DEVICE;
@@ -57,7 +57,7 @@ int main() {
     WheelPacket pkt;
     int was_down = 0;
 
-    send_notification("OpenWheel", "OpenWheel openwheel-daemon started");
+    send_notification("ASUS Dial", "asus-dial-daemon started");
     while (1) {
         int bytesRead = read(fd, &pkt, sizeof(pkt));
         if (bytesRead < 0) {

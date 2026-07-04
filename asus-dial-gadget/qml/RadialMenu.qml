@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/RadialMenu.qml
+// asus-dial-gadget/qml/RadialMenu.qml
 import QtQuick
 
 Item {

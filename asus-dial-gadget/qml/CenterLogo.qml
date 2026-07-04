@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/CenterLogo.qml
+// asus-dial-gadget/qml/CenterLogo.qml
 import QtQuick
 
 Item {

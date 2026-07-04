@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/DialIcon.qml
+// asus-dial-gadget/qml/DialIcon.qml
 import QtQuick
 import QtQuick.Shapes
 
