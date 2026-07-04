@@ -6,23 +6,41 @@ Item {
     property string iconName: ""
     property string valueLabel: ""
     // 0-100 for functions with a meaningful level (Volume, Brightness); -1 means
-    // "no percentage" (Scroll, Media), which keeps the original fixed-size arc.
+    // "no percentage" (Scroll, Media) — those use the last rotation direction
+    // instead (see below).
     property int valuePercent: -1
+    // Sign of the last rotate tick's direction (+1/-1), 0 if not applicable
+    // (e.g. the menu-close confirmation, which isn't a rotation).
+    property int direction: 0
 
     // When there's a real percentage, the highlighted arc starts at the top
     // (12 o'clock) and sweeps clockwise proportionally to the value, like a
-    // fill gauge. Otherwise it keeps the original fixed 60-degree arc centered
-    // at the top. A small floor keeps the fill from fully vanishing at 0%, so
+    // fill gauge. A small floor keeps the fill from fully vanishing at 0%, so
     // there's always a visible sliver (and the icon's background, see below,
     // stays consistently on the filled color rather than flipping to the
     // empty background right at 0%).
+    //
+    // Without a percentage (Scroll, Media), there's no absolute level to show
+    // a fill amount for — instead the same highlighted-arc language shows
+    // which way the dial was last turned: one side for one direction, the
+    // other side for the other, centered at the top when idle/not applicable.
     readonly property real minFillSpanAngle: 2 * Math.PI * 0.03
+    readonly property real directionalSpanAngle: Math.PI / 2
     readonly property real fillSpanAngle: root.valuePercent >= 0
         ? Math.max(root.minFillSpanAngle, 2 * Math.PI * (root.valuePercent / 100))
-        : Math.PI / 3
-    readonly property real fillCenterAngle: root.valuePercent >= 0
-        ? -Math.PI / 2 + root.fillSpanAngle / 2
-        : -Math.PI / 2
+        : root.directionalSpanAngle
+    readonly property real fillCenterAngle: {
+        if (root.valuePercent >= 0) {
+            return -Math.PI / 2 + root.fillSpanAngle / 2
+        }
+        if (root.direction > 0) {
+            return 0            // 3 o'clock
+        }
+        if (root.direction < 0) {
+            return Math.PI      // 9 o'clock
+        }
+        return -Math.PI / 2     // idle: centered at top
+    }
 
     RingWedge {
         anchors.centerIn: parent

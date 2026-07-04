@@ -30,10 +30,11 @@ Window {
 
     Connections {
         target: dialController
-        function onHudRequested(iconName, valueLabel, valuePercent) {
+        function onHudRequested(iconName, valueLabel, valuePercent, direction) {
             compactDial.iconName = iconName
             compactDial.valueLabel = valueLabel
             compactDial.valuePercent = valuePercent
+            compactDial.direction = direction
             hudTimer.restart()
         }
     }

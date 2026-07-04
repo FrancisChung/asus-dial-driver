@@ -11,5 +11,5 @@ void SyncRotateDispatcher::dispatch(DialFunction *function, int direction)
     const int percent = function->currentValuePercent();
     const QString label = percent >= 0 ? composeHudValueLabelFromPercent(function, percent)
                                         : composeHudValueLabel(function);
-    emit hudReady(function->iconName(), label, percent);
+    emit hudReady(function->iconName(), label, percent, direction);
 }
