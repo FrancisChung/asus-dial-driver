@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/CompactDial.qml
+// asus-dial-gadget/qml/CompactDial.qml
 import QtQuick
 
 Item {

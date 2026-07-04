@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/RingWedge.qml
+// asus-dial-gadget/qml/RingWedge.qml
 import QtQuick
 import QtQuick.Shapes
 
