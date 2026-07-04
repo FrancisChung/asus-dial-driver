@@ -8,7 +8,7 @@ private slots:
     void isAvailableFindsMprisPlayer();
     void isAvailableFalseWhenNoPlayer();
     void adjustSeeksFiveSecondsInMicroseconds();
-    void currentValueLabelStripsPrefix();
+    void currentValueLabelIsJustMediaRegardlessOfPlayer();
 };
 
 void TestMediaFunction::isAvailableFindsMprisPlayer()
@@ -44,13 +44,19 @@ void TestMediaFunction::adjustSeeksFiveSecondsInMicroseconds()
     QCOMPARE(caller.lastArgs.at(0).toLongLong(), 5000000LL);
 }
 
-void TestMediaFunction::currentValueLabelStripsPrefix()
+void TestMediaFunction::currentValueLabelIsJustMediaRegardlessOfPlayer()
 {
+    // The MPRIS bus name is an internal D-Bus identifier, not a friendly
+    // player name — e.g. Chromium registers as
+    // "org.mpris.MediaPlayer2.chromium.instance6005", which used to leak
+    // straight into the on-screen HUD as "Media: chromium.instance6005".
+    // There's no per-player display name to show instead, so the label is
+    // just "Media" regardless of which player is active.
     FakeDBusCaller caller;
-    caller.nextReplyArgs = {QStringList{"org.mpris.MediaPlayer2.spotify"}};
+    caller.nextReplyArgs = {QStringList{"org.mpris.MediaPlayer2.chromium.instance6005"}};
     MediaFunction media(&caller);
 
-    QCOMPARE(media.currentValueLabel(), QStringLiteral("spotify"));
+    QCOMPARE(media.currentValueLabel(), QStringLiteral("Media"));
 }
 
 QTEST_MAIN(TestMediaFunction)

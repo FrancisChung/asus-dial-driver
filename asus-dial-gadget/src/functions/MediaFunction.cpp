@@ -43,9 +43,9 @@ void MediaFunction::adjust(int direction)
 
 QString MediaFunction::currentValueLabel() const
 {
-    const QString service = findActivePlayer();
-    if (service.isEmpty()) {
-        return QStringLiteral("--");
-    }
-    return service.mid(QStringLiteral("org.mpris.MediaPlayer2.").length());
+    // The MPRIS bus name is an internal D-Bus identifier (e.g. Chromium
+    // registers as "org.mpris.MediaPlayer2.chromium.instance6005"), not a
+    // friendly player name, so it isn't shown here — there's no per-player
+    // value to report, so the HUD just shows "Media".
+    return displayName();
 }
