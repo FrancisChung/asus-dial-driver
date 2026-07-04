@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(openwheel-gadget CXX)
+project(asus-dial-gadget CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,7 +12,7 @@ pkg_check_modules(X11 REQUIRED x11)
 
 qt_standard_project_setup()
 
-qt_add_library(openwheel-gadget-core STATIC
+qt_add_library(asus-dial-gadget-core STATIC
     src/DialFunction.h
     src/FunctionRegistry.h
     src/FunctionRegistry.cpp
@@ -58,18 +58,18 @@ qt_add_library(openwheel-gadget-core STATIC
     src/functions/ScrollBackendFactory.h
     src/functions/ScrollBackendFactory.cpp
 )
-target_link_libraries(openwheel-gadget-core PUBLIC
+target_link_libraries(asus-dial-gadget-core PUBLIC
     Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Qml Qt6::DBus
 )
-target_link_libraries(openwheel-gadget-core PRIVATE ${XTST_LIBRARIES} ${X11_LIBRARIES})
-target_include_directories(openwheel-gadget-core PUBLIC src)
-target_include_directories(openwheel-gadget-core PRIVATE ${XTST_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
+target_link_libraries(asus-dial-gadget-core PRIVATE ${XTST_LIBRARIES} ${X11_LIBRARIES})
+target_include_directories(asus-dial-gadget-core PUBLIC src)
+target_include_directories(asus-dial-gadget-core PRIVATE ${XTST_INCLUDE_DIRS} ${X11_INCLUDE_DIRS})
 
-qt_add_executable(openwheel-gadget src/main.cpp)
-target_link_libraries(openwheel-gadget PRIVATE openwheel-gadget-core Qt6::Quick)
+qt_add_executable(asus-dial-gadget src/main.cpp)
+target_link_libraries(asus-dial-gadget PRIVATE asus-dial-gadget-core Qt6::Quick)
 
-qt_add_qml_module(openwheel-gadget
-    URI OpenWheelGadget
+qt_add_qml_module(asus-dial-gadget
+    URI AsusDialGadget
     VERSION 1.0
     QML_FILES
         qml/DialOverlay.qml

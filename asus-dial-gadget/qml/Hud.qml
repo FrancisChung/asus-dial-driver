@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/Hud.qml
+// asus-dial-gadget/qml/Hud.qml
 import QtQuick
 
 Item {

@@ -3,7 +3,7 @@
 A Linux driver and companion GUI for the Asus Dial hardware. Currently tested on Linux Mint (Ubuntu).
 
 This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to get the daemon
-working, plus a new Qt6/QML tray + on-screen overlay (`openwheel-gadget`) that turns the dial into
+working, plus a new Qt6/QML tray + on-screen overlay (`asus-dial-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
 ## Overview
@@ -36,9 +36,9 @@ changed:
 
 ## What's here
 
-- **`openwheel-daemon`** — reads the Asus Dial's raw HID input and emits `Rotate`/`Press` events as
+- **`asus-dial-daemon`** — reads the Asus Dial's raw HID input and emits `Rotate`/`Press` events as
   D-Bus signals on the session bus (`org.asus.dial` / `/org/asus/dial`).
-- **`openwheel-gadget`** — a Qt6/QML tray icon and on-screen overlay that listens to those D-Bus
+- **`asus-dial-gadget`** — a Qt6/QML tray icon and on-screen overlay that listens to those D-Bus
   signals and turns them into an actual usable dial: a radial menu (Surface-Dial-style) for picking
   which function the dial controls, live on-screen feedback, and a system tray with an
   enable/disable toggle and quit.
@@ -81,7 +81,7 @@ changed:
    function, closes the menu, and briefly shows a HUD confirming what you picked. This is one
    continuous gesture (hold → rotate → release) — no second press needed.
 5. **Tray icon** — open its context menu for the Enabled toggle and Quit. The icon itself changes
-   if the daemon disconnects (e.g. if `asus_wheel` isn't running).
+   if the daemon disconnects (e.g. if `asus-dial-daemon` isn't running).
 
 ## Building and launching
 
@@ -89,11 +89,11 @@ changed:
 
 From the repo root, after installing the dependencies below:
 ```bash
-./launch-openwheel.sh
+./launch-asus-dial.sh
 ```
-This builds the daemon and gadget if they aren't already built, starts `openwheel-daemon` if
+This builds the daemon and gadget if they aren't already built, starts `asus-dial-daemon` if
 nothing already owns `org.asus.dial` on the session bus (reusing an already-running daemon
-otherwise), waits for it to register, then launches `openwheel-gadget`. It only stops the daemon it
+otherwise), waits for it to register, then launches `asus-dial-gadget`. It only stops the daemon it
 started itself when you quit the gadget — it won't touch a daemon started some other way.
 
 Run it as your normal user — never with `sudo`. Nothing in this stack needs root once the udev
@@ -120,23 +120,23 @@ this by default.
 
 **Daemon:**
 ```bash
-cd openwheel-daemon
+cd asus-dial-daemon
 cmake .
 make
 ```
-Produces `openwheel-daemon/asus_wheel`. It needs read/write access to the dial's HID device, which
+Produces `asus-dial-daemon/asus-dial-daemon`. It needs read/write access to the dial's HID device, which
 it finds automatically at startup by scanning `/sys/class/hidraw` for the ASUS2020 device (the
 hidraw number shifts depending on what else is plugged in, e.g. docks/hubs) — see "Permissions"
-above for one-time setup so this doesn't require root. Run it with `./asus_wheel`.
+above for one-time setup so this doesn't require root. Run it with `./asus-dial-daemon`.
 
 **Gadget:**
 ```bash
-cd openwheel-gadget
+cd asus-dial-gadget
 mkdir -p build && cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
-Produces `openwheel-gadget/build/openwheel-gadget`. Run it with `./openwheel-gadget` — it needs the
+Produces `asus-dial-gadget/build/asus-dial-gadget`. Run it with `./asus-dial-gadget` — it needs the
 daemon (or anything else emitting the same D-Bus signals) running to do anything. For testing
 without physical hardware, you can inject signals directly:
 ```bash
@@ -158,16 +158,14 @@ installed" QML errors as soon as it tries to load `DialOverlay.qml`.
 
 ### Autostart
 
-To start automatically with your session, first symlink the built binary to your PATH (run from inside
-the `build/` directory used above):
+To start both the daemon and gadget automatically when you log in (Linux Mint/Cinnamon or any
+other XDG-autostart-compliant desktop), run once from the repo root:
 ```bash
-mkdir -p ~/.local/bin
-ln -sf "$(pwd)/openwheel-gadget" ~/.local/bin/openwheel-gadget
+./install-autostart.sh
 ```
-
-Then copy `openwheel-gadget/openwheel-gadget.desktop` to `~/.config/autostart/`. This handles the
-gadget only — for the daemon to also start automatically, set up your own systemd user service or
-equivalent (not provided here).
+This writes a per-user `~/.config/autostart/asus-dial.desktop` entry pointing at
+`launch-asus-dial.sh` (no root/sudo — user-scoped only, same as everything else in this stack). It
+takes effect on your next login. To remove it, delete that file.
 
 ### Wayland scroll support (optional)
 
@@ -182,8 +180,8 @@ menu is simply disabled — every other function works normally on Wayland regar
 ```bash
 QT_QPA_PLATFORM=offscreen ctest --output-on-failure
 ```
-(run from `openwheel-gadget/build/`, no display server needed). If any test involving D-Bus fails,
-or if you have `openwheel-daemon` (or any other service already registered on `org.asus.dial`)
+(run from `asus-dial-gadget/build/`, no display server needed). If any test involving D-Bus fails,
+or if you have `asus-dial-daemon` (or any other service already registered on `org.asus.dial`)
 running while testing, wrap the command in `dbus-run-session --`, e.g. `dbus-run-session -- env
 QT_QPA_PLATFORM=offscreen ctest --output-on-failure` — some tests take temporary ownership of that
 D-Bus name, which conflicts with a real daemon (or any other owner) already holding it on your

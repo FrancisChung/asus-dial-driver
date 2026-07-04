@@ -1,4 +1,4 @@
-// openwheel-gadget/src/main.cpp
+// asus-dial-gadget/src/main.cpp
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty(QStringLiteral("dialController"), &dialController);
-    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/OpenWheelGadget/qml/DialOverlay.qml")));
+    engine.load(QUrl(QStringLiteral("qrc:/qt/qml/AsusDialGadget/qml/DialOverlay.qml")));
     if (engine.rootObjects().isEmpty()) {
         return -1;
     }
