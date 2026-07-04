@@ -21,7 +21,13 @@ Item {
     readonly property real spanDeg: root.spanAngle * 180 / Math.PI
 
     function wedgePathData() {
-        var segments = 16
+        // Segment count scales with the actual angle swept, not a fixed
+        // number — a fixed count looks fine for a small wedge slice but
+        // produces a visibly faceted "annular sectors" look for a full
+        // circle (e.g. CompactDial's background ring), which sweeps a much
+        // larger angle through the same number of segments otherwise.
+        var segmentsPerFullCircle = 90
+        var segments = Math.max(3, Math.ceil(root.spanAngle / (2 * Math.PI) * segmentsPerFullCircle))
         var d = "M " + (root.cx + root.innerRadius * Math.cos(root.startAngle)) + "," + (root.cy + root.innerRadius * Math.sin(root.startAngle))
         d += " L " + (root.cx + root.outerRadius * Math.cos(root.startAngle)) + "," + (root.cy + root.outerRadius * Math.sin(root.startAngle))
         for (var i = 1; i <= segments; i++) {
