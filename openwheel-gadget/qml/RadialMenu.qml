@@ -3,35 +3,29 @@ import QtQuick
 
 Item {
     id: root
-    readonly property int count: dialController.functionCount()
+    readonly property int totalWedgeCount: 7
+    readonly property int realCount: dialController.functionCount()
 
     Repeater {
-        model: root.count
-        delegate: Rectangle {
+        model: root.totalWedgeCount
+        delegate: RingWedge {
             required property int index
-            width: 64
-            height: 64
-            radius: width / 2
-            color: index === dialController.highlightedIndex ? "#C9A87C" : "#1a1a1a"
-            border.color: "#C9A87C"
-            border.width: 1.5
+            anchors.fill: parent
+            centerAngle: 2 * Math.PI * index / root.totalWedgeCount - Math.PI / 2
+            spanAngle: 2 * Math.PI / root.totalWedgeCount
+            innerRadius: 60
+            outerRadius: 150
+            fillColor: index < root.realCount && index === dialController.highlightedIndex
+                       ? "#C9A87C"
+                       : "#1a1a1a"
+            iconId: index < root.realCount ? dialController.iconNameAt(index) : ""
+            iconColor: index < root.realCount && index === dialController.highlightedIndex
+                       ? "#1a1a1a"
+                       : "#C9A87C"
             opacity: {
                 var _menuOpenTrigger = dialController.menuOpen
+                if (index >= root.realCount) return 0.35
                 return dialController.isAvailableAt(index) ? 1.0 : 0.35
-            }
-            x: root.width / 2
-               + (root.width / 2 - 40) * Math.cos(2 * Math.PI * index / root.count - Math.PI / 2)
-               - width / 2
-            y: root.height / 2
-               + (root.height / 2 - 40) * Math.sin(2 * Math.PI * index / root.count - Math.PI / 2)
-               - height / 2
-
-            DialIcon {
-                anchors.centerIn: parent
-                width: 28
-                height: 28
-                iconId: dialController.iconNameAt(index)
-                color: index === dialController.highlightedIndex ? "#1a1a1a" : "#C9A87C"
             }
         }
     }
