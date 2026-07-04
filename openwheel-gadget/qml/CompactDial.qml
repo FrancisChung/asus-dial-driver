@@ -22,34 +22,38 @@ Item {
 
     RingWedge {
         anchors.centerIn: parent
-        width: 100
-        height: 100
+        width: 160
+        height: 160
         centerAngle: 0
         spanAngle: 2 * Math.PI
-        innerRadius: 30
-        outerRadius: 48
+        innerRadius: 48
+        outerRadius: 80
         fillColor: "#1a1a1a"
         iconId: ""
     }
 
     RingWedge {
         anchors.centerIn: parent
-        width: 100
-        height: 100
+        width: 160
+        height: 160
         centerAngle: root.fillCenterAngle
         spanAngle: root.fillSpanAngle
-        innerRadius: 30
-        outerRadius: 48
+        innerRadius: 48
+        outerRadius: 80
         fillColor: "#C9A87C"
         iconId: root.iconName
         iconColor: "#1a1a1a"
+        iconSize: 22
     }
 
     Text {
         anchors.centerIn: parent
+        width: 90
         text: root.valueLabel
         color: "#C9A87C"
-        font.pixelSize: 16
+        font.pixelSize: 20
         font.letterSpacing: 0.5
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
     }
 }

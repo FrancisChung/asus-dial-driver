@@ -11,6 +11,7 @@ Item {
     property color fillColor: "#1a1a1a"
     property string iconId: ""
     property color iconColor: "#C9A87C"
+    property real iconSize: 28
 
     readonly property real startAngle: root.centerAngle - root.spanAngle / 2
     readonly property real endAngle: root.centerAngle + root.spanAngle / 2
@@ -46,8 +47,8 @@ Item {
 
     DialIcon {
         visible: root.iconId !== ""
-        width: 28
-        height: 28
+        width: root.iconSize
+        height: root.iconSize
         iconId: root.iconId
         color: root.iconColor
         x: root.cx + (root.innerRadius + root.outerRadius) / 2 * Math.cos(root.centerAngle) - width / 2
