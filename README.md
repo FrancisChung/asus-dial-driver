@@ -1,4 +1,4 @@
-# asus-dial-driver
+# Asus Dial Driver
 
 A Linux driver and companion GUI for the Asus Dial hardware. Currently tested on Linux Mint (Ubuntu).
 
@@ -6,7 +6,12 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`asus-dial-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
-*Not affiliated with or endorsed by ASUSTeK Computer Inc. ASUS and ASUS Dial are trademarks of
+
+## DISCLAIMER
+*Not affiliated with or endorsed by ASUSTeK Computer Inc. 
+<br />
+<br />
+ASUS and ASUS Dial are trademarks of
 their respective owner; they're referenced here only to describe the hardware this project is
 compatible with.*
 
