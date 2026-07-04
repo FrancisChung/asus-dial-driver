@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Asus Dial Gadget
-Comment=Tray icon and on-screen overlay for the Asus Dial
-Exec=openwheel-gadget
-Icon=input-dialpad
-Terminal=false
-Categories=Utility;
-X-GNOME-Autostart-enabled=true

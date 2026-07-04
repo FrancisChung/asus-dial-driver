@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Launches openwheel-daemon (asus_wheel) if it isn't already running, waits for it
-# to register on the session D-Bus, then launches openwheel-gadget in the foreground.
+# Launches asus-dial-daemon if it isn't already running, waits for it
+# to register on the session D-Bus, then launches asus-dial-gadget in the foreground.
 #
 # Run this as your normal user — no sudo, no root, anywhere. The daemon
 # needs read/write access to the dial's hidraw device, which comes from
@@ -26,10 +26,10 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DAEMON_DIR="$SCRIPT_DIR/openwheel-daemon"
-GADGET_DIR="$SCRIPT_DIR/openwheel-gadget"
-DAEMON_BIN="$DAEMON_DIR/asus_wheel"
-GADGET_BIN="$GADGET_DIR/build/openwheel-gadget"
+DAEMON_DIR="$SCRIPT_DIR/asus-dial-daemon"
+GADGET_DIR="$SCRIPT_DIR/asus-dial-gadget"
+DAEMON_BIN="$DAEMON_DIR/asus-dial-daemon"
+GADGET_BIN="$GADGET_DIR/build/asus-dial-gadget"
 DBUS_SERVICE="org.asus.dial"
 
 STARTED_DAEMON=0
@@ -37,7 +37,7 @@ DAEMON_PID=""
 
 cleanup() {
     if [ "$STARTED_DAEMON" -eq 1 ] && [ -n "$DAEMON_PID" ] && kill -0 "$DAEMON_PID" 2>/dev/null; then
-        echo "Stopping openwheel-daemon (PID $DAEMON_PID)..."
+        echo "Stopping asus-dial-daemon (PID $DAEMON_PID)..."
         kill "$DAEMON_PID" 2>/dev/null || true
     fi
 }
@@ -51,7 +51,7 @@ service_registered() {
 
 # hidraw numbering depends on USB/I2C enumeration order (docks, hubs, etc.
 # shift it), so find the dial by name instead of assuming a fixed path.
-# Mirrors find_hidraw_device() in openwheel-daemon/helpers.c.
+# Mirrors find_hidraw_device() in asus-dial-daemon/helpers.c.
 find_dial_hidraw_device() {
     local dir uevent
     for dir in /sys/class/hidraw/hidraw*; do
@@ -64,7 +64,7 @@ find_dial_hidraw_device() {
     return 1
 }
 
-echo "== openwheel launcher =="
+echo "== asus-dial launcher =="
 
 # Rebuild only if a source file is newer than the existing binary (or the
 # binary doesn't exist yet). Excludes build/ and CMakeFiles/ since those hold
@@ -83,19 +83,19 @@ needs_rebuild() {
 
 # 1. Build the daemon, but only if its sources changed since the last build.
 if needs_rebuild "$DAEMON_BIN" "$DAEMON_DIR"; then
-    echo "Building openwheel-daemon (source changed)..."
+    echo "Building asus-dial-daemon (source changed)..."
     (cd "$DAEMON_DIR" && cmake . && make)
 else
-    echo "openwheel-daemon is up to date, skipping build."
+    echo "asus-dial-daemon is up to date, skipping build."
 fi
 
 # 2. Build the gadget, same up-to-date check.
 if needs_rebuild "$GADGET_BIN" "$GADGET_DIR/src" "$GADGET_DIR/qml" "$GADGET_DIR/tests" "$GADGET_DIR/CMakeLists.txt"; then
-    echo "Building openwheel-gadget (source changed)..."
+    echo "Building asus-dial-gadget (source changed)..."
     mkdir -p "$GADGET_DIR/build"
     (cd "$GADGET_DIR/build" && cmake .. -DCMAKE_BUILD_TYPE=Release && cmake --build .)
 else
-    echo "openwheel-gadget is up to date, skipping build."
+    echo "asus-dial-gadget is up to date, skipping build."
 fi
 
 # 3. Ensure a daemon owns org.asus.dial, starting one if needed.
@@ -116,7 +116,7 @@ else
         exit 1
     fi
 
-    echo "Starting openwheel-daemon..."
+    echo "Starting asus-dial-daemon..."
     "$DAEMON_BIN" &
     DAEMON_PID=$!
     STARTED_DAEMON=1
@@ -130,7 +130,7 @@ else
         fi
         if ! kill -0 "$DAEMON_PID" 2>/dev/null; then
             echo
-            echo "ERROR: openwheel-daemon exited before registering on D-Bus. Check permissions/hardware." >&2
+            echo "ERROR: asus-dial-daemon exited before registering on D-Bus. Check permissions/hardware." >&2
             exit 1
         fi
         echo -n "."
@@ -152,7 +152,31 @@ for pkg in qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-work
     fi
 done
 
-# 5. Launch the gadget in the foreground. When it exits, cleanup() stops the
+# 5. Replace any already-running gadget instead of stacking a second one on
+#    top of it — two instances both listen to the same daemon signals and
+#    independently track their own active-function/menu state, which is
+#    confusing at best (each processes rotate/press events but only one's
+#    window is visibly on top), and easy to end up with by just running this
+#    script again while an earlier one is still up. The gadget runs as this
+#    same user (no root anywhere in this stack), so signaling it needs no
+#    special privileges.
+OLD_GADGET_PIDS="$(pgrep -f "^${GADGET_BIN}$" || true)"
+if [ -n "$OLD_GADGET_PIDS" ]; then
+    echo "WARNING: asus-dial-gadget was already running (PID $(echo "$OLD_GADGET_PIDS" | tr '\n' ' ')) — stopping it before starting a fresh instance." >&2
+    # shellcheck disable=SC2086
+    kill $OLD_GADGET_PIDS 2>/dev/null || true
+    for _ in $(seq 1 20); do
+        pgrep -f "^${GADGET_BIN}$" >/dev/null 2>&1 || break
+        sleep 0.2
+    done
+    if pgrep -f "^${GADGET_BIN}$" >/dev/null 2>&1; then
+        echo "WARNING: existing gadget (PID $(echo "$OLD_GADGET_PIDS" | tr '\n' ' ')) didn't exit in time, forcing it." >&2
+        # shellcheck disable=SC2086
+        kill -9 $OLD_GADGET_PIDS 2>/dev/null || true
+    fi
+fi
+
+# 6. Launch the gadget in the foreground. When it exits, cleanup() stops the
 #    daemon above only if this script started it.
-echo "Starting openwheel-gadget..."
+echo "Starting asus-dial-gadget..."
 "$GADGET_BIN"

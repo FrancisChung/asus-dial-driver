@@ -38,6 +38,9 @@
 *.exe
 *.out
 *.app
+/asus-dial-daemon/asus-dial-daemon
+/asus-dial-daemon/test_find_hidraw_device
+/asus-dial-daemon/CTestTestfile.cmake
 
 # Build directories
 build/

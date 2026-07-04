@@ -20,7 +20,7 @@ UinputScrollBackend::UinputScrollBackend()
     setup.id.bustype = BUS_VIRTUAL;
     setup.id.vendor = 0x1234;
     setup.id.product = 0x5678;
-    std::strncpy(setup.name, "openwheel-gadget-scroll", sizeof(setup.name) - 1);
+    std::strncpy(setup.name, "asus-dial-gadget-scroll", sizeof(setup.name) - 1);
 
     if (ioctl(m_fd, UI_DEV_SETUP, &setup) < 0 || ioctl(m_fd, UI_DEV_CREATE) < 0) {
         close(m_fd);

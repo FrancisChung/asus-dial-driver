@@ -1,4 +1,4 @@
-// openwheel-gadget/qml/DialOverlay.qml
+// asus-dial-gadget/qml/DialOverlay.qml
 import QtQuick
 import QtQuick.Window
 
