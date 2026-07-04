@@ -152,7 +152,31 @@ for pkg in qml6-module-qtquick qml6-module-qtquick-window qml6-module-qtqml-work
     fi
 done
 
-# 5. Launch the gadget in the foreground. When it exits, cleanup() stops the
+# 5. Replace any already-running gadget instead of stacking a second one on
+#    top of it — two instances both listen to the same daemon signals and
+#    independently track their own active-function/menu state, which is
+#    confusing at best (each processes rotate/press events but only one's
+#    window is visibly on top), and easy to end up with by just running this
+#    script again while an earlier one is still up. The gadget runs as this
+#    same user (no root anywhere in this stack), so signaling it needs no
+#    special privileges.
+OLD_GADGET_PIDS="$(pgrep -f "^${GADGET_BIN}$" || true)"
+if [ -n "$OLD_GADGET_PIDS" ]; then
+    echo "WARNING: openwheel-gadget was already running (PID $(echo "$OLD_GADGET_PIDS" | tr '\n' ' ')) — stopping it before starting a fresh instance." >&2
+    # shellcheck disable=SC2086
+    kill $OLD_GADGET_PIDS 2>/dev/null || true
+    for _ in $(seq 1 20); do
+        pgrep -f "^${GADGET_BIN}$" >/dev/null 2>&1 || break
+        sleep 0.2
+    done
+    if pgrep -f "^${GADGET_BIN}$" >/dev/null 2>&1; then
+        echo "WARNING: existing gadget (PID $(echo "$OLD_GADGET_PIDS" | tr '\n' ' ')) didn't exit in time, forcing it." >&2
+        # shellcheck disable=SC2086
+        kill -9 $OLD_GADGET_PIDS 2>/dev/null || true
+    fi
+fi
+
+# 6. Launch the gadget in the foreground. When it exits, cleanup() stops the
 #    daemon above only if this script started it.
 echo "Starting openwheel-gadget..."
 "$GADGET_BIN"

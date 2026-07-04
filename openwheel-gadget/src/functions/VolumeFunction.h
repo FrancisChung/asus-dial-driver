@@ -12,6 +12,7 @@ public:
     bool isAvailable() const override;
     void adjust(int direction) override;
     QString currentValueLabel() const override;
+    int currentValuePercent() const override;
 
 private:
     ProcessRunner *m_runner;

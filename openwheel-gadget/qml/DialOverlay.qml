@@ -17,8 +17,8 @@ Window {
         visible: dialController.menuOpen
     }
 
-    Hud {
-        id: hud
+    CompactDial {
+        id: compactDial
         anchors.fill: parent
         visible: !dialController.menuOpen && hudTimer.running
     }
@@ -30,9 +30,11 @@ Window {
 
     Connections {
         target: dialController
-        function onHudRequested(iconName, valueLabel) {
-            hud.iconName = iconName
-            hud.valueLabel = valueLabel
+        function onHudRequested(iconName, valueLabel, valuePercent, direction) {
+            compactDial.iconName = iconName
+            compactDial.valueLabel = valueLabel
+            compactDial.valuePercent = valuePercent
+            compactDial.direction = direction
             hudTimer.restart()
         }
     }

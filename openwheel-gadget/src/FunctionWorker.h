@@ -12,5 +12,5 @@ public slots:
     void performRotate(DialFunction *function, int direction);
 
 signals:
-    void hudReady(const QString &iconName, const QString &valueLabel);
+    void hudReady(const QString &iconName, const QString &valueLabel, int valuePercent, int direction);
 };

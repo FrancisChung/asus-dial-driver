@@ -105,7 +105,7 @@ void DialController::onPressChanged(bool pressed)
             m_settings.setValue(QStringLiteral("dial/activeFunction"), function->id());
         }
         if (function) {
-            emit hudRequested(function->iconName(), function->displayName());
+            emit hudRequested(function->iconName(), function->displayName(), function->currentValuePercent(), 0);
         }
         emit menuOpenChanged();
         emit activeFunctionChanged();
