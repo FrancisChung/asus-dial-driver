@@ -6,11 +6,25 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`openwheel-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
+## Overview
+
+There are 3 different versions of the asus-dial-driver.
+The 3 different versions can be found in different branches of the repo,
+v1-basic, v2-icons, v3-asus.
+
+The main branch is currently the same as v3-asus as I think most people might prefer this UI.
+
 ## Demo
+
+Below is a quick demo of what each UI looks like. Please note that ffmpeg did not capture my laptop screen going darker or brighter as I turned the knobs around in both directions, but I assure you they did!
 
 The interaction is the same across versions — quick rotate adjusts whichever function is active;
 press-hold-rotate-release opens the radial menu to pick a different one — only the menu's look has
 changed:
+
+**v3 — ASUS pie-ring**
+
+![Solid pie-ring radial menu styled after ASUS's own Dial software, rotating through Volume, Media, Brightness, and Scroll](docs/media/demo-v3-asus.gif)
 
 **v2 — icons**
 
