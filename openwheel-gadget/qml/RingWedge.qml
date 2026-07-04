@@ -19,33 +19,28 @@ Item {
     readonly property real startDeg: root.startAngle * 180 / Math.PI
     readonly property real spanDeg: root.spanAngle * 180 / Math.PI
 
+    function wedgePathData() {
+        var segments = 16
+        var d = "M " + (root.cx + root.innerRadius * Math.cos(root.startAngle)) + "," + (root.cy + root.innerRadius * Math.sin(root.startAngle))
+        d += " L " + (root.cx + root.outerRadius * Math.cos(root.startAngle)) + "," + (root.cy + root.outerRadius * Math.sin(root.startAngle))
+        for (var i = 1; i <= segments; i++) {
+            var a = root.startAngle + root.spanAngle * i / segments
+            d += " L " + (root.cx + root.outerRadius * Math.cos(a)) + "," + (root.cy + root.outerRadius * Math.sin(a))
+        }
+        for (var j = segments; j >= 0; j--) {
+            var a2 = root.startAngle + root.spanAngle * j / segments
+            d += " L " + (root.cx + root.innerRadius * Math.cos(a2)) + "," + (root.cy + root.innerRadius * Math.sin(a2))
+        }
+        d += " Z"
+        return d
+    }
+
     Shape {
         anchors.fill: parent
         ShapePath {
             fillColor: root.fillColor
             strokeColor: "transparent"
-            startX: root.cx + root.innerRadius * Math.cos(root.startAngle)
-            startY: root.cy + root.innerRadius * Math.sin(root.startAngle)
-            PathLine {
-                x: root.cx + root.outerRadius * Math.cos(root.startAngle)
-                y: root.cy + root.outerRadius * Math.sin(root.startAngle)
-            }
-            PathAngleArc {
-                centerX: root.cx; centerY: root.cy
-                radiusX: root.outerRadius; radiusY: root.outerRadius
-                startAngle: root.startDeg
-                sweepAngle: root.spanDeg
-            }
-            PathLine {
-                x: root.cx + root.innerRadius * Math.cos(root.endAngle)
-                y: root.cy + root.innerRadius * Math.sin(root.endAngle)
-            }
-            PathAngleArc {
-                centerX: root.cx; centerY: root.cy
-                radiusX: root.innerRadius; radiusY: root.innerRadius
-                startAngle: root.startDeg + root.spanDeg
-                sweepAngle: -root.spanDeg
-            }
+            PathSvg { path: root.wedgePathData() }
         }
     }
 
