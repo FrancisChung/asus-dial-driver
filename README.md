@@ -114,16 +114,22 @@ all — it's rejected by D-Bus's own security policy, not just missing environme
 ### Permissions (one-time setup)
 
 The daemon needs read/write access to the dial's `hidraw` device, which is `root`-only by default.
-Install the provided udev rule to grant your user's `input` group access instead:
+Run the provided script to install the udev rule granting your user's `input` group access instead,
+and to add you to that group if you aren't already a member:
+```bash
+./setup-permissions.sh
+```
+Run it as your normal user, not with sudo — it calls `sudo` itself only for the specific commands
+that need it. If you'd rather run those commands by hand instead, they are:
 ```bash
 sudo cp udev/99-asus-dial-hidraw.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=hidraw
+sudo usermod -aG input $USER
 ```
-Then unplug/replug the dial (or reboot) if `ls -la /dev/hidraw*` doesn't already show `group input`
-on the dial's device. You also need to be a member of the `input` group yourself
-(`sudo usermod -aG input $USER`, then log out and back in) — most desktop setups already include
-this by default.
+Either way, unplug/replug the dial (or reboot) if `ls -la /dev/hidraw*` doesn't already show `group
+input` on the dial's device, and log out and back in if you were just added to the `input` group
+(most desktop setups already include this by default).
 
 ### Manual build
 
@@ -180,9 +186,10 @@ takes effect on your next login. To remove it, delete that file.
 
 The Scroll dial function uses X11's XTest extension by default and works out of the box on any X11
 session. On Wayland, scroll instead uses a `uinput` virtual device, which requires one-time setup:
-add your user to the `input` group (`sudo usermod -aG input $USER`, then log out and back in) so
-the gadget can open `/dev/uinput` without root. If this isn't set up, the Scroll entry in the radial
-menu is simply disabled — every other function works normally on Wayland regardless.
+add your user to the `input` group so the gadget can open `/dev/uinput` without root — the same
+`./setup-permissions.sh` from "Permissions" above does this; log out and back in afterwards if it
+added you. If this isn't set up, the Scroll entry in the radial menu is simply disabled — every
+other function works normally on Wayland regardless.
 
 ### Running tests
 
