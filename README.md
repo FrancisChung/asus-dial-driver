@@ -6,6 +6,8 @@ This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to 
 working, plus a new Qt6/QML tray + on-screen overlay (`asus-dial-gadget`) that turns the dial into
 a Surface-Dial-style control for volume, screen brightness, scrolling, and media playback.
 
+Special thanks to Frédéric AIME (https://github.com/fredaime) for making this project possible with the ground work he did with openwheel.
+
 
 ## DISCLAIMER
 *Not affiliated with or endorsed by ASUSTeK Computer Inc. 
