@@ -7,10 +7,13 @@ DBusListener::DBusListener(QObject *parent)
       m_watcher(QStringLiteral("org.asus.dial"), QDBusConnection::sessionBus(),
                 QDBusServiceWatcher::WatchForOwnerChange)
 {
-    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/org/asus/dial"),
+    // Filter by the daemon's well-known service name so signals from other
+    // local processes on the session bus can't spoof dial input (Qt tracks
+    // the current owner of "org.asus.dial" and updates the match if it changes).
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.asus.dial"), QStringLiteral("/org/asus/dial"),
                                           QStringLiteral("org.asus.dial"), QStringLiteral("Rotate"),
                                           this, SLOT(onRotate(int)));
-    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/org/asus/dial"),
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.asus.dial"), QStringLiteral("/org/asus/dial"),
                                           QStringLiteral("org.asus.dial"), QStringLiteral("Press"),
                                           this, SLOT(onPress(int)));
 
