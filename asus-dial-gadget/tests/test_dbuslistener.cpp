@@ -24,6 +24,11 @@ void TestDBusListener::cleanup()
 
 void TestDBusListener::rotateSignalEmitsRotated()
 {
+    // DBusListener now only accepts Rotate/Press signals from whoever owns
+    // org.asus.dial, so the test must claim that name before emitting --
+    // otherwise the signal is (correctly) ignored as spoofed.
+    QVERIFY(QDBusConnection::sessionBus().registerService(QStringLiteral("org.asus.dial")));
+
     DBusListener listener;
     QSignalSpy spy(&listener, &DBusListener::rotated);
 
@@ -38,6 +43,10 @@ void TestDBusListener::rotateSignalEmitsRotated()
 
 void TestDBusListener::pressSignalEmitsPressChanged()
 {
+    // See rotateSignalEmitsRotated: must own org.asus.dial for the signal to
+    // pass the sender filter in DBusListener.
+    QVERIFY(QDBusConnection::sessionBus().registerService(QStringLiteral("org.asus.dial")));
+
     DBusListener listener;
     QSignalSpy spy(&listener, &DBusListener::pressChanged);
 
