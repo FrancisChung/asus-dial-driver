@@ -1,6 +1,6 @@
 # Asus Dial Driver
 
-A Linux driver and companion GUI for the Asus Dial hardware. Currently tested on Linux Mint (Ubuntu).
+A Linux driver and companion GUI for the Asus Dial hardware. Currently only tested on a Asus ProArt16 Studiobook (2023) running Linux Mint (Ubuntu).
 
 This is based on a fork of https://github.com/fredaime/openwheel/ with fixes to get the daemon
 working, plus a new Qt6/QML tray + on-screen overlay (`asus-dial-gadget`) that turns the dial into
