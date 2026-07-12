@@ -17,7 +17,12 @@ ASUS and ASUS Dial are trademarks of
 their respective owner; they're referenced here only to describe the hardware this project is
 compatible with.*
 
-## Overview
+## Asus Linux Drivers Repo
+If you're looking for Asus Drivers, but this repo isn't what you're looking for, try the following repo maintained by Lukáš Drahník</br> 
+https://github.com/asus-linux-drivers
+</br> 
+</br> 
+# Overview
 
 There are 3 different versions of the asus-dial-driver.
 The 3 different versions can be found in different branches of the repo,
