@@ -4,11 +4,13 @@ import QtQuick.Window
 
 Window {
     id: overlayWindow
+    property bool hudVisible: false
+
     flags: Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.Tool
     color: "transparent"
     width: 320
     height: 320
-    visible: dialController.menuOpen || hudTimer.running
+    visible: dialController.menuOpen || hudVisible
     x: (Screen.width - width) / 2
     y: (Screen.height - height) / 2
 
@@ -20,12 +22,13 @@ Window {
     CompactDial {
         id: compactDial
         anchors.fill: parent
-        visible: !dialController.menuOpen && hudTimer.running
+        visible: !dialController.menuOpen && overlayWindow.hudVisible
     }
 
     Timer {
         id: hudTimer
         interval: 1500
+        onTriggered: overlayWindow.hudVisible = false
     }
 
     Connections {
@@ -35,6 +38,7 @@ Window {
             compactDial.valueLabel = valueLabel
             compactDial.valuePercent = valuePercent
             compactDial.direction = direction
+            overlayWindow.hudVisible = true
             hudTimer.restart()
         }
     }
