@@ -105,7 +105,7 @@ changed:
 
 From the repo root, after installing the dependencies below:
 ```bash
-./launch-asus-dial.sh
+./start.sh
 ```
 This builds the daemon and gadget if they aren't already built, starts `asus-dial-daemon` if
 nothing already owns `org.asus.dial` on the session bus (reusing an already-running daemon
@@ -186,7 +186,7 @@ other XDG-autostart-compliant desktop), run once from the repo root:
 ./install-autostart.sh
 ```
 This writes a per-user `~/.config/autostart/asus-dial.desktop` entry pointing at
-`launch-asus-dial.sh` (no root/sudo — user-scoped only, same as everything else in this stack). It
+`start.sh` (no root/sudo — user-scoped only, same as everything else in this stack). It
 takes effect on your next login. To remove it, delete that file.
 
 ### Wayland scroll support (optional)

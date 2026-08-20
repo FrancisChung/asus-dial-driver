@@ -3,7 +3,7 @@
 # start automatically when you log in to Linux Mint/Cinnamon (or any other
 # XDG-autostart-compliant desktop). User-scoped only — no root, no sudo:
 # writes a single .desktop file to ~/.config/autostart/, pointing at this
-# repo's launch-asus-dial.sh with its current absolute path.
+# repo's start.sh with its current absolute path.
 set -euo pipefail
 
 if [ "$(id -u)" -eq 0 ]; then
@@ -13,7 +13,7 @@ if [ "$(id -u)" -eq 0 ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LAUNCH_SCRIPT="$SCRIPT_DIR/launch-asus-dial.sh"
+LAUNCH_SCRIPT="$SCRIPT_DIR/start.sh"
 AUTOSTART_DIR="$HOME/.config/autostart"
 DESKTOP_FILE="$AUTOSTART_DIR/asus-dial.desktop"
 
