@@ -8,6 +8,17 @@ a Surface-Dial-style control for volume, screen brightness, scrolling, and media
 
 Special thanks to Frédéric AIME (https://github.com/fredaime) for making this project possible with the ground work he did with openwheel.
 
+## Quick Note - Asus Dial vs Asus DialPad
+
+This is what an Asus Dial looks like:
+
+<img width="524" height="381" alt="image" src="https://github.com/user-attachments/assets/48ef7ad3-d233-49a9-8cab-20a1dcd15f8d" />
+
+This is what an Asus DialPad looks like: 
+
+<img width="554" height="554" alt="image" src="https://github.com/user-attachments/assets/7cf43ab2-1748-4f3a-b4f4-643e603ad82a" />
+
+
 
 ## DISCLAIMER
 *Not affiliated with or endorsed by ASUSTeK Computer Inc. 
